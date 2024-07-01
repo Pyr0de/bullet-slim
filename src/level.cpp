@@ -1,11 +1,19 @@
 #include "level.h"
 #include "obstacle.h"
+#include <SDL_rect.h>
 #include <SDL_render.h>
 #include <SDL_rwops.h>
 #include <cstdint>
 #include <cstdio>
 #include <string>
 #include <vector>
+
+//+1 width for end byte 0xff
+#define LEVEL_WIDTH  21
+#define LEVEL_HEIGHT 11
+#define TILE_SIDE 64
+
+const int BYTES_PER_LEVEL = LEVEL_WIDTH * LEVEL_HEIGHT;
 
 void readfile(std::string file, uint8_t* data) {
 	SDL_RWops* f = SDL_RWFromFile(file.c_str(), "rb");
@@ -15,7 +23,7 @@ void readfile(std::string file, uint8_t* data) {
 		return;
 	}
 	
-	for (int i = 0; i < 231; i++) {
+	for (int i = 0; i < BYTES_PER_LEVEL; i++) {
 		SDL_RWread(f, &data[i], sizeof(uint8_t), 1);
 	}
 	SDL_RWclose(f);
@@ -24,10 +32,10 @@ void readfile(std::string file, uint8_t* data) {
 
 
 void createObstacles(SDL_Renderer* render, std::vector<Obstacle*>* obstacles, std::string file) {
-	uint8_t data[231];
+	uint8_t data[BYTES_PER_LEVEL];
 	readfile(file, data);
 
-	for (int i = 0; i < 231; i++) {
+	for (int i = 0; i < BYTES_PER_LEVEL; i++) {
 		if (data[i] == 0x00 || data[i] == 0xff)
 			continue;
 
@@ -38,13 +46,13 @@ void createObstacles(SDL_Renderer* render, std::vector<Obstacle*>* obstacles, st
 				data[i+w] = 0x00;
 				w++;
 			}
-		}else if (data[i] == data[i + h * 21]) {
-			while (data[i + h * 21] == data[i]) {
-				data[i + 21 * h] = 0x00;
+		}else if (data[i] == data[i + h * LEVEL_WIDTH]) {
+			while (data[i + h * LEVEL_WIDTH] == data[i]) {
+				data[i + LEVEL_WIDTH * h] = 0x00;
 				h++;
 			}
 		}
-		obstacles->push_back(new Obstacle(render, {(i%21) * 64, (i/21) * 64, w * 64, h *64}, data[i]));
-		printf("%d %d %d %d\n", (i%21) * 64, (i%21) * 64, w , h);
+		SDL_Rect rect = { (i % LEVEL_WIDTH) * TILE_SIDE, (i / LEVEL_WIDTH) * TILE_SIDE, w * TILE_SIDE, h * TILE_SIDE};
+		obstacles->push_back(new Obstacle(render, rect, data[i]));
 	}
 }
