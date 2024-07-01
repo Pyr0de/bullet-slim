@@ -19,7 +19,6 @@ const int FPS_CAP = 1000 / 60;
 void gameStart(SDL_Renderer *render, int width, int height) {
 	std::vector<Obstacle*> obs = {};
 	createObstacles(render, &obs, "assets/test2.map");
-	printf("%l\n", obs.size());
 	Player player = Player(render);
 
 	Texture fps_count = Texture(20);

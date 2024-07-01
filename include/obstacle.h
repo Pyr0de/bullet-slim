@@ -9,7 +9,6 @@ class Obstacle {
 	Texture texture;
 	SDL_Rect renderBox;
 	Uint8 state[10];
-	int renderOffsetX, renderOffsetY;
 
 	public:
 		SDL_Rect hitbox;
