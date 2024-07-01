@@ -9,8 +9,8 @@
 #include "player.h"
 #include "utils.h"
 
-#define VEL_X 5
-#define VEL_JUMP -20
+#define VEL_X 10
+#define VEL_JUMP -15
 
 Player::Player(SDL_Renderer* render) {
 	texture = Texture();
