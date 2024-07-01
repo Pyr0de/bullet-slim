@@ -9,7 +9,7 @@
 #include "player.h"
 #include "utils.h"
 
-#define VEL_X 10
+#define VEL_X 5
 #define VEL_JUMP -20
 
 Player::Player(SDL_Renderer* render) {
@@ -40,24 +40,39 @@ void Player::handleInputs() {
 
 void Player::render(SDL_Renderer* render) {
 	texture.render(render, &hitbox, 1);
+	SDL_SetRenderDrawColor(render, 0,255,255,255);
+	SDL_RenderDrawRect(render, &hitbox);
 }
 
 void Player::move(std::vector<Obstacle*> obs) {
 
 	hitbox.x += velX;
-	for (auto i = obs.begin(); i != obs.end(); ++i) {
-		if (checkCollision(&hitbox, &(*i)->hitbox)) {
+	for (int i = 0; i < obs.size(); i++) {
+		if (checkCollision(&hitbox, &obs[i]->hitbox)) {
 			hitbox.x -= velX;
+			if (velX > 0) {
+				hitbox.x = obs[i]->hitbox.x - hitbox.w - 1;
+			}else if (velX < 0) {
+				hitbox.x = obs[i]->hitbox.x + obs[i]->hitbox.w + 1;
+			}
 			break;
 		}
 	}
 	velX = 0;
 
 	hitbox.y += velY;	
-	for (auto i = obs.begin(); i != obs.end(); ++i) {
-		if (checkCollision(&hitbox, &(*i)->hitbox)) {
+	for (int i = 0; i < obs.size(); i++) {
+		if (checkCollision(&hitbox, &obs[i]->hitbox)) {
 			hitbox.y -= velY;
-			jumping = false;
+			
+			if (velY > 0) {
+				jumping = false;
+
+				hitbox.y = obs[i]->hitbox.y - hitbox.h - 1;
+			}else if (velY < 0) {
+				hitbox.y = obs[i]->hitbox.y + obs[i]->hitbox.h + 1;
+			}
+			
 			velY = 1;
 			break;
 		}else{
