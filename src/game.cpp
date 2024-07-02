@@ -18,17 +18,17 @@ const int FPS_CAP = 1000 / 60;
 
 void gameStart(SDL_Renderer *render, int width, int height) {
 	std::vector<Obstacle*> obs = {};
-	createObstacles(render, &obs, "assets/test2.map");
+	createObstacles(render, &obs, "assets/level1.map");
+	
+	Texture background = Texture();
+	background.loadFile(render, "assets/level1.png");
+	SDL_Rect background_rect = SDL_Rect {0,0,0,0};
+
 	Player player = Player(render);
 
 	Texture fps_count = Texture(20);
 	SDL_Rect text_box = SDL_Rect {0,0,0,0};
 	SDL_Color white = {255,255,255,255};
-
-	Obstacle ground = Obstacle(render, {0, height-64, 1024, 64}, 1);
-	Obstacle ground2 = Obstacle(render, {0, 30, 64, 64*10}, 2);
-	//SDL_Rect ground = {0, height - 100, width, 1};
-	std::vector<Obstacle*> grounds = {&ground, &ground2};
 
 	Uint64 start = SDL_GetTicks64();;
 	Uint8 frames = 0;
@@ -63,15 +63,14 @@ void gameStart(SDL_Renderer *render, int width, int height) {
 		player.move(obs);
 
 		//Render
-		SDL_SetRenderDrawColor(render, 50, 0, 100, 255);
+		SDL_SetRenderDrawColor(render, 45, 41, 53, 255);
 		SDL_RenderClear(render);
 
+		background.render(render, &background_rect, 1);
+		//for (int i = 0; i < obs.size(); i++) {
+		//	obs[i]->render(render);
+		//}
 		player.render(render);
-		//ground.render(render);
-		//ground2.render(render);
-		for (int i = 0; i < obs.size(); i++) {
-			obs[i]->render(render);
-		}
 
 		fps_count.render(render, &text_box, 1);
 		SDL_RenderPresent(render);

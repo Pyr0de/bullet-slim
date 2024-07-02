@@ -6,7 +6,7 @@
 
 Obstacle::Obstacle(SDL_Renderer* render, SDL_Rect hit_box, uint8_t orientation) {
 	texture = Texture();
-	texture.loadSpriteSheet(render, "assets/ground.png", 4);
+	texture.loadSpriteSheet(render, "assets/ground.png", 8);
 
 	texture.setRotation(orientation * 90);
 
@@ -24,6 +24,10 @@ Obstacle::Obstacle(SDL_Renderer* render, SDL_Rect hit_box, uint8_t orientation) 
 }
 
 void Obstacle::render(SDL_Renderer* render) {
+	return; // NOT RENDERING INDIVIDUAL BLOCKS
+	SDL_SetRenderDrawColor(render, 255,0,0,255);
+	SDL_RenderDrawRect(render, &hitbox);
+
 	int n = hitbox.w > hitbox.h ? hitbox.w / hitbox.h : hitbox.h / hitbox.w;
 
 	for (int i = 0; i < n; i++) {
@@ -37,8 +41,6 @@ void Obstacle::render(SDL_Renderer* render) {
 
 		texture.renderSprite(render, &renderBox, 2, state[i%10]);
 	}
-	SDL_SetRenderDrawColor(render, 255,0,0,255);
-	SDL_RenderDrawRect(render, &hitbox);
 	
 }
 
