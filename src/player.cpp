@@ -12,6 +12,10 @@
 #define VEL_X 10
 #define VEL_JUMP -15
 
+#define HEALTH 20
+#define HEALTHBAR_X 70
+#define HEALTHBAR_Y 10
+
 Player::Player(SDL_Renderer* render) {
 	texture = Texture();
 	texture.loadFile(render, "assets/slime.png");
@@ -20,6 +24,12 @@ Player::Player(SDL_Renderer* render) {
 	velX = 0;
 	velY = 0;
 	jumping = false;
+
+	health = HEALTH;
+	healthbar_img = Texture();
+	healthbar_img.loadFile(render, "assets/healthbar.png");
+
+	
 }
 
 void Player::handleInputs() {
@@ -37,12 +47,22 @@ void Player::handleInputs() {
 			jumping = true;
 		}
 	}else if (jumping && velY < 0) {
-		velY = 1;
+		velY *= -1;
 	}
 }
 
 void Player::render(SDL_Renderer* render) {
+	SDL_Rect health_rect = {HEALTHBAR_X + 27, HEALTHBAR_Y + 10, health * 10, 32};
+	SDL_Rect healthbar = {HEALTHBAR_X, HEALTHBAR_Y, 0, 0};
+
 	texture.render(render, &hitbox, 1);
+
+	SDL_SetRenderDrawColor(render, 178, 0, 0, 255);
+	SDL_RenderFillRect(render, &health_rect);
+
+	healthbar_img.render(render, &healthbar, 1);
+
+	return;
 	SDL_SetRenderDrawColor(render, 0,255,255,255);
 	SDL_RenderDrawRect(render, &hitbox);
 }
@@ -85,6 +105,16 @@ void Player::move(std::vector<Obstacle*> obs) {
 		velY+= 1;
 	}
 	
+}
+
+void Player::setHealth(int h) {
+	health += h;
+	if (health < 0) {
+		health = 0;
+	}
+	if (health > HEALTH) {
+		health = HEALTH;
+	}
 }
 
 

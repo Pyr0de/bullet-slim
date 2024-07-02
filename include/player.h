@@ -8,13 +8,20 @@
 class Player {
 	Texture texture;
 	SDL_Rect hitbox;
+
 	int posX, posY;
 	int velX, velY;
 	bool jumping;
 
+	Texture healthbar_img;
+	//SDL_Rect healthbar;
+	int health;
+
 	public:
 
 	Player(SDL_Renderer*);
+
+	void setHealth(int health);
 
 	void handleInputs();
 	void render(SDL_Renderer*);
