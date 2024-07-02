@@ -14,6 +14,7 @@ Texture::Texture(){
 	h = 0;
 	numberOfSprites = 0;
 	rotate = 0;
+	flip = SDL_FLIP_NONE;
 
 }
 
@@ -84,10 +85,10 @@ void Texture::render(SDL_Renderer* render, SDL_Rect* rect, int zoom) {
 	if (!texture) {
 		return;
 	}
-	rect->w = w * zoom;
-	rect->h = h * zoom;
+	rect->w = w * zoom ;
+	rect->h = h * zoom ;
 
-	SDL_RenderCopy(render, texture, nullptr, rect);
+	SDL_RenderCopyEx(render, texture, nullptr, rect, rotate, nullptr, flip);
 } 
 
 void Texture::renderSprite(SDL_Renderer* render, SDL_Rect* rect, int zoom, int idx) {
@@ -99,9 +100,12 @@ void Texture::renderSprite(SDL_Renderer* render, SDL_Rect* rect, int zoom, int i
 
 	SDL_Rect src = {0, h * idx / numberOfSprites, w, h / numberOfSprites};
 
-	SDL_RenderCopyEx(render, texture, &src, rect, rotate, nullptr, SDL_FLIP_NONE);
+	SDL_RenderCopyEx(render, texture, &src, rect, rotate, nullptr, flip);
 }
 
 void Texture::setRotation(int angle){
 	rotate = angle;
+}
+void Texture::setFlip(SDL_RendererFlip f) {
+	flip = f;
 }

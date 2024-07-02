@@ -8,6 +8,7 @@ class Texture {
 	SDL_Texture* texture;
 	int numberOfSprites;
 	int rotate;
+	SDL_RendererFlip flip;
 
 	public:
 	int w,h;
@@ -18,6 +19,7 @@ class Texture {
 	~Texture();
 
 	void setRotation(int angle);
+	void setFlip(SDL_RendererFlip f);
 
 	void loadFile(SDL_Renderer* render, std::string file);
 	void loadText(SDL_Renderer* render, std::string text, SDL_Color color);
