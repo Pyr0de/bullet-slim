@@ -24,17 +24,20 @@ Player::Player(SDL_Renderer* render) {
 
 void Player::handleInputs() {
 	auto *keyboardState = SDL_GetKeyboardState(nullptr);
-	if (keyboardState[SDL_SCANCODE_A] || keyboardState[SDL_SCANCODE_LEFT]) {
+	if ((keyboardState[SDL_SCANCODE_A] || keyboardState[SDL_SCANCODE_LEFT]) && velX <= 0) {
 		velX = -VEL_X;
-	}
-	if (keyboardState[SDL_SCANCODE_D] || keyboardState[SDL_SCANCODE_RIGHT]) {
+	}else if ((keyboardState[SDL_SCANCODE_D] || keyboardState[SDL_SCANCODE_RIGHT]) && velX >= 0) {
 		velX = VEL_X;
+	}else {
+		velX = 0;
 	}
 	if (keyboardState[SDL_SCANCODE_SPACE] || keyboardState[SDL_SCANCODE_UP]) {
 		if (!jumping) {
 			velY = VEL_JUMP;
 			jumping = true;
 		}
+	}else if (jumping && velY < 0) {
+		velY = 1;
 	}
 }
 
@@ -58,7 +61,6 @@ void Player::move(std::vector<Obstacle*> obs) {
 			break;
 		}
 	}
-	velX = 0;
 
 	hitbox.y += velY;	
 	for (int i = 0; i < obs.size(); i++) {
