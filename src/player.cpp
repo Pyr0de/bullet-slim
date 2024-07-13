@@ -16,6 +16,8 @@
 #define HEALTHBAR_X 70
 #define HEALTHBAR_Y 10
 
+#define DAMAGE_COOLDOWN 60
+
 Player::Player(SDL_Renderer* render) {
 	texture = Texture();
 	texture.loadFile(render, "assets/slime.png");
@@ -52,6 +54,10 @@ void Player::handleInputs() {
 }
 
 void Player::render(SDL_Renderer* render) {
+	if (damageCooldown) {
+		damageCooldown--;
+	}
+
 	SDL_Rect health_rect = {HEALTHBAR_X + 27, HEALTHBAR_Y + 10, health * 10, 32};
 	SDL_Rect healthbar = {HEALTHBAR_X, HEALTHBAR_Y, 0, 0};
 
@@ -107,7 +113,14 @@ void Player::move(std::vector<Obstacle*> obs) {
 	
 }
 
-void Player::setHealth(int h) {
+void Player::changeHealth(int h) {
+	if (h < 0) {
+		if (damageCooldown) {
+			return;
+		}
+		damageCooldown = DAMAGE_COOLDOWN;
+	}
+
 	health += h;
 	if (health < 0) {
 		health = 0;

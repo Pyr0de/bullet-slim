@@ -1,3 +1,5 @@
+#pragma once
+
 #include <SDL_rect.h>
 #include <SDL_render.h>
 #include <vector>
@@ -7,21 +9,21 @@
 
 class Player {
 	Texture texture;
-	SDL_Rect hitbox;
 
-	int posX, posY;
 	int velX, velY;
 	bool jumping;
 
 	Texture healthbar_img;
 	//SDL_Rect healthbar;
 	int health;
+	int damageCooldown = 0;
 
 	public:
+	SDL_Rect hitbox;
 
 	Player(SDL_Renderer*);
 
-	void setHealth(int health);
+	void changeHealth(int health);
 
 	void handleInputs();
 	void render(SDL_Renderer*);

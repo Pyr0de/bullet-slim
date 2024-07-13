@@ -18,10 +18,10 @@ const int FPS_CAP = 1000 / 60;
 
 void gameStart(SDL_Renderer *render, int width, int height) {
 	std::vector<Obstacle*> obs = {};
-	createObstacles(render, &obs, "assets/level1.map");
+	createObstacles(render, &obs, "assets/level0.map");
 	
 	Texture background = Texture();
-	background.loadFile(render, "assets/level1.png");
+	background.loadFile(render, "assets/level0.png");
 	SDL_Rect background_rect = SDL_Rect {0,0,0,0};
 
 	Player player = Player(render);
