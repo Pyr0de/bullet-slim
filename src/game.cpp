@@ -1,13 +1,8 @@
 #include <SDL_events.h>
-#include <SDL_pixels.h>
-#include <SDL_rect.h>
-#include <SDL_render.h>
-#include <SDL_stdinc.h>
-#include <SDL_timer.h>
-#include <cstdio>
+#include <SDL_mouse.h>
 #include <sstream>
-#include <vector>
 
+#include "bullet.h"
 #include "game.h"
 #include "level.h"
 #include "obstacle.h"
@@ -29,6 +24,8 @@ void gameStart(SDL_Renderer *render, int width, int height) {
 	Texture fps_count = Texture(20);
 	SDL_Rect text_box = SDL_Rect {0,0,0,0};
 	SDL_Color white = {255,255,255,255};
+
+	std::vector<Bullet*> bullets = {};
 
 	Uint64 start = SDL_GetTicks64();;
 	Uint8 frames = 0;
@@ -52,6 +49,11 @@ void gameStart(SDL_Renderer *render, int width, int height) {
 			if (e.type == SDL_QUIT) {
 				running = false;
 			}
+			if (e.type == SDL_MOUSEBUTTONDOWN) {
+				int x = 0, y = 0;
+				SDL_GetMouseState(&x, &y);
+				bullets.push_back(new Bullet(render, x, y, &player));
+			}
 		}
 
 		fps_text.str("");
@@ -61,16 +63,30 @@ void gameStart(SDL_Renderer *render, int width, int height) {
 		//Game Tick
 		player.handleInputs();
 		player.move(obs);
+		for (int i = 0; i < bullets.size(); i++) {
+
+			bullets[i]->move(&player, obs);
+			if (bullets[i]->explode(&player)){
+				delete bullets[i];
+				bullets.erase(bullets.begin() + i);
+			}
+
+		}
+		//bullet.move(&player);
 
 		//Render
 		SDL_SetRenderDrawColor(render, 45, 41, 53, 255);
 		SDL_RenderClear(render);
 
 		background.render(render, &background_rect, 1);
-		//for (int i = 0; i < obs.size(); i++) {
-		//	obs[i]->render(render);
-		//}
+		for (int i = 0; i < bullets.size(); i++) {
+			bullets[i]->render(render);
+			bullets[i]->test(render, &player);
+		}
 		player.render(render);
+		//bullet.render(render);
+		//bullet.test(render, &player);
+		
 
 		fps_count.render(render, &text_box, 1);
 		SDL_RenderPresent(render);
