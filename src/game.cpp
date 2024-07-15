@@ -26,7 +26,7 @@ SDL_Rect background_rect = SDL_Rect {0,0,0,0};
 
 Player* player;
 
-Texture fps_count = Texture(20);
+Texture fps_count;
 SDL_Rect text_box = SDL_Rect {0,0,0,0};
 SDL_Color white = {255,255,255,255};
 
@@ -50,7 +50,7 @@ void gameStart(SDL_Renderer *r, int w, int h) {
 	background.loadFile(render, "assets/level0.png");
 
 	player = new Player(render);
-
+	fps_count = Texture(20);
 #ifdef __EMSCRIPTEN__
 	emscripten_set_main_loop(main_loop, 0, 1);
 #endif
@@ -87,7 +87,7 @@ void main_loop() {
 	fps_text.str("");
 	fps_text << "FPS: " << fps;
 	fps_count.loadText(render, fps_text.str().c_str(), white);
-
+	
 	//Game Tick
 	player->handleInputs();
 	player->move(obs);
