@@ -24,7 +24,7 @@ int main() {
 		printf("Error: IMG init\n%s\n", IMG_GetError());
 		return 1;
 	}
-	SDL_Window* window = SDL_CreateWindow("SDL Test",
+	SDL_Window* window = SDL_CreateWindow("Bullet Slim",
 			SDL_WINDOWPOS_CENTERED, 
 			SDL_WINDOWPOS_CENTERED,
 			SCREEN_WIDTH, SCREEN_HEIGHT,
