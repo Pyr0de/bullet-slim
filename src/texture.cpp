@@ -108,8 +108,10 @@ void Texture::scaleAndRender(SDL_Renderer* render, SDL_Rect* rect) {
 		return;
 	}
 
-	//SDL_Rect src = {0, 0, w, h};
-	SDL_RenderCopyEx(render, texture, nullptr, rect, rotate, nullptr, flip);
+	SDL_Rect dst = {rect->x, rect->y, rect->h, rect->w};
+	SDL_Point anchor = {0,rect->w};
+
+	SDL_RenderCopyEx(render, texture, nullptr, &dst, rotate, &anchor, flip);
 }
 
 void Texture::setRotation(int angle){
