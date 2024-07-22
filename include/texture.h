@@ -7,11 +7,11 @@
 class Texture {
 	SDL_Texture* texture;
 	int numberOfSprites;
-	int rotate;
 	SDL_RendererFlip flip;
 
 	public:
 	int w,h;
+	int rotate;
 
 	Texture();
 	Texture(int);
