@@ -29,4 +29,9 @@ else ()
 	target_link_libraries(${PROJECT_NAME} PUBLIC SDL2_ttf::SDL2_ttf)
 endif()
 
+if (DEBUG)
+	add_compile_definitions(__DEBUG__)
+	message("DEBUG MODE")
+endif()
+
 file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})

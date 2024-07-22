@@ -109,7 +109,9 @@ void main_loop() {
 	background.render(render, &background_rect, 1);
 	for (int i = 0; i < bullets.size(); i++) {
 		bullets[i]->render(render);
+#ifdef __DEBUG__
 		bullets[i]->test(render, player);
+#endif
 	}
 	player->render(render);
 	//bullet.render(render);
