@@ -9,17 +9,46 @@
 #include <SDL_timer.h>
 #include <cmath>
 #include <cstdio>
+#include <cstdlib>
+#include <ctime>
 #include <vector>
 
-#define EXPLODE_MS 1000
+#define EXPLODE_MS 500
 #define EXPLODE_RADIUS 100
 #define EXPLODE_DAMAGE -5
 
 const int SPEED = 5;
 
+Texture* bullet = nullptr;
+Texture* explosion[3];
+
+void loadTextures(SDL_Renderer* render) {
+	bullet = new Texture();
+	bullet->loadFile(render, "assets/bullet.png");
+
+	for (int i = 0; i < 3; i++) {
+		delete explosion[i];
+		explosion[i] = new Texture();
+		std::string path;
+		
+		if (i == 0) {
+			path = "assets/explosion/r.png";
+		}
+		if (i == 1) {
+			path = "assets/explosion/o.png";
+		}
+		if (i == 2) {
+			path = "assets/explosion/y.png";
+		}
+
+		explosion[i]->loadFile(render, path);
+	}
+}
+
 Bullet::Bullet(SDL_Renderer* render, int x, int y, Player* player) {
-	texture = Texture();
-	texture.loadFile(render, "assets/bullet.png");
+	if (bullet == nullptr) {
+		loadTextures(render);
+	}
 
 	hitbox.x = x;
 	hitbox.y = y;	
@@ -33,7 +62,11 @@ Bullet::Bullet(SDL_Renderer* render, int x, int y, Player* player) {
 	int dy = player_cy - bullet_cy;
 	angle = std::atan2(dy, dx);
 
-	texture.setRotation(int(angle * 180/3.14));
+	srand(time(0));
+	for (int i = 0; i < 6; i++) {
+		offset[i] = rand() % 50 * (rand() % 2 == 0 ? 1 : -1);
+	} 
+
 	//printf("%d\n", int(angle * 180/3.142));
 }
 
@@ -47,6 +80,9 @@ void Bullet::test(SDL_Renderer* render, Player* player) {
 
 	SDL_SetRenderDrawColor(render, 255, 255, 0, 255);
 	SDL_RenderDrawLine(render,player_cx, player_cy, bullet_cx, bullet_cy);
+	
+	SDL_SetRenderDrawColor(render, 255,255,255,255);
+	SDL_RenderDrawRect(render, &hitbox);
 
 	int add = EXPLODE_RADIUS;
 
@@ -60,11 +96,18 @@ void Bullet::test(SDL_Renderer* render, Player* player) {
 }
 
 void Bullet::render(SDL_Renderer* render) {
-	texture.render(render, &hitbox, 2);
-	return;
-	SDL_SetRenderDrawColor(render, 255,255,255,255);
-	SDL_RenderDrawRect(render, &hitbox);
-
+	if (explode_start == 0) {
+		bullet->rotate = int(angle * 180/3.14);
+		bullet->render(render, &hitbox, 2);
+	}else {
+		for (int i = 0; i < 3; i++) {
+			hitbox.x += offset[2*i];
+			hitbox.y += offset[2*i + 1];
+			explosion[i]->scaleAndRender(render, &hitbox);
+			hitbox.x -= offset[2*i];
+			hitbox.y -= offset[2*i + 1];
+		}
+	}
 }
 
 void Bullet::move(Player* player, std::vector<Obstacle*> obstacles){
@@ -102,11 +145,15 @@ bool Bullet::explode(Player* player) {
 	int bullet_cy = hitbox.y + hitbox.h/2;
 	int rad = EXPLODE_RADIUS;
 
+	hitbox.w = 200;
+	hitbox.h = 200;
+	hitbox.x = bullet_cx - hitbox.w/2;
+	hitbox.y = bullet_cy - hitbox.h/2;
+
 	SDL_Rect explode_box = {bullet_cx - rad, bullet_cy - rad, 2 * rad, 2 * rad};
 	
 	if (checkCollision(&explode_box, &player->hitbox)){
 		player->changeHealth(EXPLODE_DAMAGE);
-		
 	}
 	
 	return false;

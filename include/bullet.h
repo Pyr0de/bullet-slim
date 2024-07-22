@@ -8,12 +8,13 @@
 #include "texture.h"
 
 class Bullet {
-	Texture texture;
 
 	float velX = 0, velY = 0;
-	SDL_Rect hitbox = {600,550,64,64};
+	SDL_Rect hitbox = {0,0,64,64};
 	double angle = 0.0;
 	Uint64 explode_start = 0;
+
+	int offset[6];
 
 	public:
 	Bullet(SDL_Renderer* render, int x, int y, Player* player);
