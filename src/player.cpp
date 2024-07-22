@@ -63,10 +63,10 @@ void Player::render(SDL_Renderer* render) {
 
 	texture.render(render, &hitbox, 1);
 
+	healthbar_img.render(render, &healthbar, 1);
+
 	SDL_SetRenderDrawColor(render, 178, 0, 0, 255);
 	SDL_RenderFillRect(render, &health_rect);
-
-	healthbar_img.render(render, &healthbar, 1);
 
 	return;
 	SDL_SetRenderDrawColor(render, 0,255,255,255);
