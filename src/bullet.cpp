@@ -6,11 +6,14 @@
 #include <SDL_mouse.h>
 #include <SDL_rect.h>
 #include <SDL_render.h>
+#include <SDL_timer.h>
 #include <cmath>
 #include <cstdio>
 #include <vector>
 
-#define EXPLODE 20
+#define EXPLODE_MS 1000
+#define EXPLODE_RADIUS 100
+#define EXPLODE_DAMAGE -5
 
 const int SPEED = 5;
 
@@ -45,9 +48,9 @@ void Bullet::test(SDL_Renderer* render, Player* player) {
 	SDL_SetRenderDrawColor(render, 255, 255, 0, 255);
 	SDL_RenderDrawLine(render,player_cx, player_cy, bullet_cx, bullet_cy);
 
-	int add = (explode_stage-1) * 20 / 3;
+	int add = EXPLODE_RADIUS;
 
-	if (explode_stage) {
+	if (explode_start) {
 		SDL_SetRenderDrawColor(render, 255,0,0,255);
 		SDL_RenderDrawLine(render, bullet_cx, bullet_cy + add, bullet_cx, bullet_cy - add);
 		SDL_RenderDrawLine(render, bullet_cx + add, bullet_cy, bullet_cx - add, bullet_cy);
@@ -66,7 +69,7 @@ void Bullet::render(SDL_Renderer* render) {
 
 void Bullet::move(Player* player, std::vector<Obstacle*> obstacles){
 	//printf("%f\n", angle);
-	if (explode_stage != 0) {
+	if (explode_start != 0) {
 		return;
 	} 
 
@@ -76,34 +79,37 @@ void Bullet::move(Player* player, std::vector<Obstacle*> obstacles){
 	hitbox.x += velX;
 	hitbox.y += velY;
 
-	explode_stage = checkCollision(&hitbox, &player->hitbox);
+	if (checkCollision(&hitbox, &player->hitbox))
+		explode_start = SDL_GetTicks64();
 	
-	for(int i = 0; i < obstacles.size() && !explode_stage; i++) {
+	for(int i = 0; i < obstacles.size() && !explode_start; i++) {
 		if (checkCollision(&hitbox, &obstacles[i]->hitbox)) {
-			explode_stage = 1;
+			explode_start = SDL_GetTicks64();
 			break;
 		}
 	}
 }
 
 bool Bullet::explode(Player* player) {
-	if (explode_stage == 0) {
+	if (explode_start == 0) {
 		return false;
 	}
-	if (explode_stage == EXPLODE) {
+	Uint64 deltaTime = SDL_GetTicks64() - explode_start;
+	if (deltaTime >= EXPLODE_MS) {
 		return true;
 	}
 	int bullet_cx = hitbox.x + hitbox.w/2;
 	int bullet_cy = hitbox.y + hitbox.h/2;
-	int rad = explode_stage * 20 / 3;
+	int rad = EXPLODE_RADIUS;
 
 	SDL_Rect explode_box = {bullet_cx - rad, bullet_cy - rad, 2 * rad, 2 * rad};
 	
 	if (checkCollision(&explode_box, &player->hitbox)){
-		player->changeHealth(-1 * (EXPLODE - explode_stage)/3);
+		player->changeHealth(EXPLODE_DAMAGE);
+		
 	}
 	
-	explode_stage++;
 	return false;
+	
 }
 

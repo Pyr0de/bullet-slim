@@ -2,6 +2,7 @@
 
 #include <SDL_rect.h>
 #include <SDL_render.h>
+#include <SDL_stdinc.h>
 
 #include "player.h"
 #include "texture.h"
@@ -12,7 +13,7 @@ class Bullet {
 	float velX = 0, velY = 0;
 	SDL_Rect hitbox = {600,550,64,64};
 	double angle = 0.0;
-	int explode_stage = 0;
+	Uint64 explode_start = 0;
 
 	public:
 	Bullet(SDL_Renderer* render, int x, int y, Player* player);
