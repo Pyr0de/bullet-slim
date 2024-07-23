@@ -25,8 +25,8 @@ else ()
 	find_package(SDL2_ttf REQUIRED CONFIG REQUIRED COMPONENTS)
 	target_link_libraries(${PROJECT_NAME} PUBLIC SDL2::SDL2)
 
-	target_link_libraries(${PROJECT_NAME} PUBLIC SDL2_image::SDL2_image)
-	target_link_libraries(${PROJECT_NAME} PUBLIC SDL2_ttf::SDL2_ttf)
+	target_link_libraries(${PROJECT_NAME} PUBLIC $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>)
+	target_link_libraries(${PROJECT_NAME} PUBLIC $<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>)
 endif()
 
 if (DEBUG)
