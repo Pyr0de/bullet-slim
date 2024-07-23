@@ -29,6 +29,7 @@ jobs:
         CMAKE_PREFIX_PATH=$(pwd)
         cd SDL2_image
         git checkout release-2.8.x
+        mv sdl2_image-config.cmake.in sdl2_image-config.cmake
         cd ..
         
 
