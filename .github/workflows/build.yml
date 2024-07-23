@@ -25,11 +25,14 @@ jobs:
       run: |
         sudo apt -y install build-essential cmake libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
         git clone https://github.com/libsdl-org/SDL_image/ SDL2_image
-        SDL2_image_DIR="$(pwd)/SDL2_image"
-        CMAKE_PREFIX_PATH=$(pwd)
         cd SDL2_image
         git checkout release-2.8.x
         mv sdl2_image-config.cmake.in sdl2_image-config.cmake
+        cd ..
+        git clone https://github.com/libsdl-org/SDL_ttf SDL2_ttf
+        cd SDL2_ttf
+        git checkout SDL2
+        mv sdl2_ttf-config.cmake.in sdl2_ttf-config.cmake
         cd ..
         
 
