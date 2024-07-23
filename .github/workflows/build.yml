@@ -24,9 +24,9 @@ jobs:
     - name: Configure Dependencies
       run: |
         sudo apt -y install build-essential cmake libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
-        git clone https://github.com/libsdl-org/SDL_image/ sdl2_image
-        pwd
-        ls
+        git clone https://github.com/libsdl-org/SDL_image/ SDL2_image
+        SDL2_image_DIR="$(pwd)/SDL2_image"
+        CMAKE_PREFIX_PATH=$(pwd)
         
         
 
