@@ -27,7 +27,9 @@ jobs:
         git clone https://github.com/libsdl-org/SDL_image/ SDL2_image
         SDL2_image_DIR="$(pwd)/SDL2_image"
         CMAKE_PREFIX_PATH=$(pwd)
-        
+        cd SDL2_image
+        git checkout release-2.8.x
+        cd ..
         
 
     - name: Configure CMake
