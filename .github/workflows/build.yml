@@ -21,12 +21,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Setup SDL2 frameworks
-      uses: BrettDong/setup-sdl2-frameworks@main
-      with:
-        sdl2: 2.30.5
-        sdl2-ttf: 2.22.0
-        sdl2-image: 2.8.2
+    - name: Configure dependencies
+      run: |
+        sudo apt -y install build-essential cmake libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
+        sudo find / -name "sdl2_image-config.cmake"
         
 
     - name: Configure CMake
