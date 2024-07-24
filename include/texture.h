@@ -20,6 +20,7 @@ class Texture {
 
 	void setRotation(int angle);
 	void setFlip(SDL_RendererFlip f);
+	void setAlpha(int alpha);
 
 	void loadFile(SDL_Renderer* render, std::string file);
 	void loadText(SDL_Renderer* render, std::string text, SDL_Color color);
