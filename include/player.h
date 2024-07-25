@@ -11,7 +11,9 @@ class Player {
 	Texture texture;
 
 	int velX, velY;
+
 	bool jumping;
+	bool knockback;
 
 	Texture healthbar_img;
 	//SDL_Rect healthbar;
@@ -19,11 +21,13 @@ class Player {
 	int damageCooldown = 0;
 
 	public:
+
 	SDL_Rect hitbox;
 
 	Player(SDL_Renderer*);
 
 	void changeHealth(int health);
+	void setKnockback(int x, int y);
 
 	void handleInputs();
 	void render(SDL_Renderer*);

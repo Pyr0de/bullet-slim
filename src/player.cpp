@@ -35,6 +35,10 @@ Player::Player(SDL_Renderer* render) {
 }
 
 void Player::handleInputs() {
+	if (knockback) {
+		return;
+	}
+
 	auto *keyboardState = SDL_GetKeyboardState(nullptr);
 	if ((keyboardState[SDL_SCANCODE_A] || keyboardState[SDL_SCANCODE_LEFT]) && velX <= 0) {
 		velX = -VEL_X;
@@ -87,6 +91,11 @@ void Player::move(std::vector<Obstacle*> obs) {
 			break;
 		}
 	}
+	if (velX > 0) {
+		velX--;
+	}else if (velX < 0) {
+		velX++;
+	}
 
 	hitbox.y += velY;	
 	for (int i = 0; i < obs.size(); i++) {
@@ -110,6 +119,10 @@ void Player::move(std::vector<Obstacle*> obs) {
 	if (jumping){
 		velY+= 1;
 	}
+	if (velX == 0 && velY == 1) {
+		knockback = false;
+	}
+	//printf("%d %d\n", velX, velY);
 	
 }
 
@@ -131,3 +144,12 @@ void Player::changeHealth(int h) {
 }
 
 
+void Player::setKnockback(int x, int y) {
+	velX = x;
+	velY = y;
+
+	knockback = true;
+	if (y < 0) {
+		jumping = true;
+	}
+}
