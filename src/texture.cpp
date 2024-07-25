@@ -120,6 +120,6 @@ void Texture::setRotation(int angle){
 void Texture::setFlip(SDL_RendererFlip f) {
 	flip = f;
 }
-void Texture::SetAlpha(int alpha) {
+void Texture::setAlpha(int alpha) {
 	SDL_SetTextureAlphaMod(texture, alpha);
 }
