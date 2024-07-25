@@ -13,6 +13,8 @@ class Bullet {
 	SDL_Rect hitbox = {0,0,64,64};
 	double angle = 0.0;
 	Uint64 explode_start = 0;
+	bool hit;
+	int alpha = 255;
 
 	int offset[6];
 

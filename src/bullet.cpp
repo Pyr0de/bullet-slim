@@ -16,6 +16,8 @@
 #define EXPLODE_MS 500
 #define EXPLODE_RADIUS 100
 #define EXPLODE_DAMAGE -5
+#define ANIMATION_OFFSET 100
+#define KNOCKBACK 25
 
 const int SPEED = 5;
 
@@ -55,8 +57,8 @@ Bullet::Bullet(SDL_Renderer* render, int x, int y, Player* player) {
 
 	int player_cx = player->hitbox.x + player->hitbox.w/2;
 	int player_cy = player->hitbox.y + player->hitbox.h/2;
-	int bullet_cx = hitbox.x;
-	int bullet_cy = hitbox.y;
+	int bullet_cx = hitbox.x + hitbox.w/2;
+	int bullet_cy = hitbox.y + hitbox.h/2;
 
 	int dx = player_cx - bullet_cx;
 	int dy = player_cy - bullet_cy;
@@ -103,6 +105,7 @@ void Bullet::render(SDL_Renderer* render) {
 		for (int i = 0; i < 3; i++) {
 			hitbox.x += offset[2*i];
 			hitbox.y += offset[2*i + 1];
+			explosion[i]->setAlpha(alpha);
 			explosion[i]->scaleAndRender(render, &hitbox);
 			hitbox.x -= offset[2*i];
 			hitbox.y -= offset[2*i + 1];
@@ -115,12 +118,12 @@ void Bullet::move(Player* player, std::vector<Obstacle*> obstacles){
 	if (explode_start != 0) {
 		return;
 	} 
-
+	// 0.5 acceleration
 	velX += std::cos(angle) * 0.5;
     velY += std::sin(angle) * 0.5;
 
-	hitbox.x += velX;
-	hitbox.y += velY;
+	hitbox.x += velX ;
+	hitbox.y += velY ;
 
 	if (checkCollision(&hitbox, &player->hitbox))
 		explode_start = SDL_GetTicks64();
@@ -140,7 +143,10 @@ bool Bullet::explode(Player* player) {
 	Uint64 deltaTime = SDL_GetTicks64() - explode_start;
 	if (deltaTime >= EXPLODE_MS) {
 		return true;
-	}
+	}	
+	alpha = (EXPLODE_MS - deltaTime + ANIMATION_OFFSET) * 255 / EXPLODE_MS;
+	alpha = alpha > 255 ? 255 : alpha;
+
 	int bullet_cx = hitbox.x + hitbox.w/2;
 	int bullet_cy = hitbox.y + hitbox.h/2;
 	int rad = EXPLODE_RADIUS;
@@ -152,8 +158,17 @@ bool Bullet::explode(Player* player) {
 
 	SDL_Rect explode_box = {bullet_cx - rad, bullet_cy - rad, 2 * rad, 2 * rad};
 	
-	if (checkCollision(&explode_box, &player->hitbox)){
+	if (checkCollision(&explode_box, &player->hitbox) && !hit && alpha > 200){
+		int player_cx = player->hitbox.x + player->hitbox.w/2;
+		int player_cy = player->hitbox.y + player->hitbox.h/2;
+
 		player->changeHealth(EXPLODE_DAMAGE);
+
+		float angle = std::atan2(player_cy - bullet_cy, player_cx - bullet_cx);
+
+		player->setKnockback(std::cos(angle) * KNOCKBACK, std::sin(angle) * KNOCKBACK);
+		
+		hit = true;
 	}
 	
 	return false;
