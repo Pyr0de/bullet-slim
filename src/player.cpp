@@ -29,7 +29,7 @@ Player::Player(SDL_Renderer* render) {
 
 	health = HEALTH;
 	healthbar_img = Texture();
-	healthbar_img.loadFile(render, "assets/healthbar.png");
+	healthbar_img.loadSpriteSheet(render, "assets/healthbar.png", 2);
 
 	
 }
@@ -67,10 +67,12 @@ void Player::render(SDL_Renderer* render) {
 
 	texture.render(render, &hitbox, 1);
 
-	healthbar_img.render(render, &healthbar, 1);
+	healthbar_img.renderSprite(render, &healthbar, 1, 1);
 
 	SDL_SetRenderDrawColor(render, 178, 0, 0, 255);
 	SDL_RenderFillRect(render, &health_rect);
+
+	healthbar_img.renderSprite(render, &healthbar, 1, 0);
 
 	return;
 	SDL_SetRenderDrawColor(render, 0,255,255,255);
