@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include "texture.h"
 #include <SDL_rect.h>
 #include <SDL_render.h>
@@ -17,5 +16,6 @@ class Laser {
 
 	void tick();
 	void render(SDL_Renderer* renderer);
-
+	
+	void test(SDL_Renderer* renderer);
 };
