@@ -23,23 +23,46 @@ jobs:
     - uses: actions/checkout@v4
     - name: Configure dependencies
       run: |
-        sudo apt -y install build-essential cmake libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
+        sudo apt -y install build-essential cmake libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev gcc-aarch64-linux-gnu
         git submodule update --init --recursive
 
-    - name: Configure CMake
+    - name: Configure CMake (Linux x64)
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: |
-        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        mkdir build
+        cmake -S . -B build -DCMAKE_CXX_COMPILER="gcc"
 
-    - name: Build
+    - name: Build (Linux x64)
       # Build your program with the given configuration
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+      run: |
+        cd build
+        make
 
-    - name: Upload
+    - name: Upload (Linux x64)
       uses: actions/upload-artifact@v4
       with:
           name: "ubuntu-latest-x64"
+          path: build/platformer-sdl
+          if-no-files-found: ignore
+        
+    - name: Configure CMake (Linux aarch64)
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      run: |
+        mkdir build
+        cmake -S . -B build -DCMAKE_CXX_COMPILER="aarch64-linux-gnu-gcc"
+
+    - name: Build (Linux aarch64)
+      # Build your program with the given configuration
+      run: |
+        cd build
+        make
+
+    - name: Upload (Linux aarch64)
+      uses: actions/upload-artifact@v4
+      with:
+          name: "ubuntu-latest-aarch64"
           path: build/platformer-sdl
           if-no-files-found: ignore
 
