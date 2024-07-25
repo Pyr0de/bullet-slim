@@ -24,6 +24,7 @@ Texture::Texture(int size){
 	h = 0;
 	numberOfSprites = 0;
 	rotate = 0;
+	flip = SDL_FLIP_NONE;
 	robotoFont = TTF_OpenFont("assets/Roboto.ttf", size);
 }
 
