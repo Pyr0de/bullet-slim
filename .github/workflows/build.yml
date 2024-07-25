@@ -50,7 +50,8 @@ jobs:
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: |
-        cmake -S . -B build -DCMAKE_C_COMPILER="aarch64-linux-gnu-gcc" -DCMAKE_CXX_COMPILER="aarch64-linux-gnu-g++"
+        cmake -S . -B build -DCMAKE_C_COMPILER="aarch64-linux-gnu-gcc" 
+      #-DCMAKE_CXX_COMPILER="aarch64-linux-gnu-g++"
 
     - name: Build (Linux aarch64)
       # Build your program with the given configuration
