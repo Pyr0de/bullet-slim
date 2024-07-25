@@ -51,7 +51,6 @@ jobs:
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: |
         cmake -S . -B build -DCMAKE_C_COMPILER="aarch64-linux-gnu-gcc" 
-      #-DCMAKE_CXX_COMPILER="aarch64-linux-gnu-g++"
 
     - name: Build (Linux aarch64)
       # Build your program with the given configuration
