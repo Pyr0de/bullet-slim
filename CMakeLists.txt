@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.25.1)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-project(platformer-sdl)
+project(bullet-slim)
 file(GLOB SOURCES "src/*.cpp")
 add_executable(${PROJECT_NAME} ${SOURCES})
 

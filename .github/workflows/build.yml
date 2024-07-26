@@ -39,5 +39,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
           name: "ubuntu-latest-x64"
-          path: build/platformer-sdl
+          path: build/bullet-slim
           if-no-files-found: ignore
