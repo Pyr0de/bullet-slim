@@ -1,0 +1,39 @@
+name: Build Release(Linux x64)
+
+on: workflow_dispatch
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Configure dependencies (Linux x64)
+      run: |
+        sudo apt -y install build-essential cmake libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
+        git submodule update --init --recursive
+        
+    - name: Configure CMake (Linux x64)
+      run: |
+        mkdir build
+        cmake -S . -B build -Wno-dev -DDEBUG=0
+        
+    - name: Build (Linux x64)
+      run: |
+        cd build
+        make -j $(nproc)
+        
+    - name: Archive (Linux x64)
+      run: |
+        cd build
+        tar -czf bullet-slim.tar.gz assets/ bullet-slim
+        
+    - name: Upload (Linux x64)
+      uses: actions/upload-artifact@v4
+      with:
+          name: "ubuntu-latest-x64-rel.tar.gz"
+          path: build/bullet-slim.tar.gz
+          if-no-files-found: ignore
