@@ -50,6 +50,7 @@ jobs:
       run: |
         sudo apt install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
         sudo dpkg --add-architecture arm64
+        echo "deb [arch=amd64] http://de2.archive.ubuntu.com/ubuntu/ bionic main restricted\ndeb-src [arch=amd64] http://de.archive.ubuntu.com/ubuntu/ bionic main restricted" >> /etc/apt/sources.list
         sudo apt update
         sudo apt -y install build-essential:arm64 cmake:arm64 libsdl2-dev:arm64 libsdl2-image-dev:arm64 libsdl2-ttf-dev:arm64
         
