@@ -1,0 +1,47 @@
+name: Pages
+
+on: push
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Configure dependencies
+      run: |
+        sudo apt -y install build-essential cmake libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev curl zip
+        git submodule update --init --recursive
+        
+    - name: Configure emscripten
+      run: |
+        git clone https://github.com/emscripten-core/emsdk.git
+        cd emsdk
+        ./emsdk install latest
+        ./emsdk activate latest
+        
+    - name: Run CMake
+      run: |
+        mkdir build
+        emcmake cmake -S . -B build -Wno-dev -DDEBUG=0 -DWASM=1
+        
+    - name: Build
+      run: |
+        cd build
+        emmake make -j $(nproc)
+        
+    - name: Archive
+      run: |
+        cd build/wasm
+        tar -czf wasm-rel.tar.gz *
+        
+    - name: Upload
+      uses: actions/upload-artifact@v4
+      with:
+          name: "wasm-rel.tar.gz"
+          path: build/wasm/wasm-rel.tar.gz
+          if-no-files-found: ignore
+          
