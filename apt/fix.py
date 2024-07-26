@@ -7,6 +7,8 @@ def main():
     out = ""
     for i in f:
         a = i.split(" ", 1)
+        if (a[0] != "deb" && a[0] != "deb-src"):
+            continue
         b = a[1]
         a[1] = "[arch=amd64]"
         a.append(b)
