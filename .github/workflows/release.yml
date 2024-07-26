@@ -37,3 +37,11 @@ jobs:
           name: "ubuntu-latest-x64-rel.tar.gz"
           path: build/bullet-slim.tar.gz
           if-no-files-found: ignore
+          
+    - uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "latest"
+        prerelease: true
+        title: "Release Linux x64"
+        files: build/bullet-slim.tar.gz
