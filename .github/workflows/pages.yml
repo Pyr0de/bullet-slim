@@ -37,14 +37,30 @@ jobs:
         
     - name: Archive
       run: |
-        cp scripts/bullet-slim.html build/wasm/index.html
-        cd build/wasm
-        tar -czf wasm-rel.tar.gz *
+        cp scripts/template.html build/wasm/index.html
+        # cd build/wasm
+        # tar -czf wasm-rel.tar.gz *
         
     - name: Upload
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-pages-artifact@v3
       with:
-          name: "wasm-rel.tar.gz"
-          path: build/wasm/wasm-rel.tar.gz
-          if-no-files-found: ignore
+          path: build/wasm/
+  # deploy:
+  #   needs: build
+
+  #   permissions:
+  #     pages: write 
+  #     id-token: write
+
+  #   environment:
+  #     name: github-pages
+  #     url: ${{ steps.deployment.outputs.page_url }}
+
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Deploy to GitHub Pages
+  #       id: deployment
+  #       uses: actions/deploy-pages@v4
+    
+  
           
