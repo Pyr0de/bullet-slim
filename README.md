@@ -1,4 +1,6 @@
 # Bullet Slim
+[![CodeQL](https://github.com/Pyr0de/bullet-slim/actions/workflows/codeql.yml/badge.svg)](https://github.com/Pyr0de/bullet-slim/actions/workflows/codeql.yml)
+
 A work in progress game made using SDL2
 
 ## Prerequisites
