@@ -22,15 +22,16 @@ jobs:
         cd emsdk
         ./emsdk install latest
         ./emsdk activate latest
-        source emsdk_env.sh
         
     - name: Run CMake
       run: |
+        source ~/emsdk/emsdk_env.sh
         mkdir build
         emcmake cmake -S . -B build -Wno-dev -DDEBUG=0 -DWASM=1
         
     - name: Build
       run: |
+        source ~/emsdk/emsdk_env.sh
         cd build
         emmake make -j $(nproc)
         
