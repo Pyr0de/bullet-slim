@@ -1,6 +1,9 @@
 name: Build Release(Linux x64)
 
-on: workflow_dispatch
+on:
+  push:
+    tags:
+      - "v*"
 
 env:
   BUILD_TYPE: Release
