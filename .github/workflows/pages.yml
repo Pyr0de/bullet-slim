@@ -37,6 +37,7 @@ jobs:
         
     - name: Archive
       run: |
+        cp scripts/bullet-slim.html build/wasm/
         cd build/wasm
         tar -czf wasm-rel.tar.gz *
         
