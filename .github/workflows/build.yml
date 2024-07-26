@@ -1,12 +1,8 @@
 # This starter workflow is for a CMake project running on a single platform. There is a different starter workflow if you need cross-platform coverage.
 # See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-multi-platform.yml
-name: Build
+name: Build (Linux x64)
 
-on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+on: [push, pull_request]
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
@@ -37,7 +33,7 @@ jobs:
       # Build your program with the given configuration
       run: |
         cd build
-        make
+        make -j $(nproc)
 
     - name: Upload (Linux x64)
       uses: actions/upload-artifact@v4
@@ -45,33 +41,3 @@ jobs:
           name: "ubuntu-latest-x64"
           path: build/platformer-sdl
           if-no-files-found: ignore
-          
-    - name: Configure dependencies (Linux aarch64)
-      run: |
-        sudo apt install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
-        sudo dpkg --add-architecture arm64
-        sudo cp apt/arm-cross-compile-sources.list /etc/apt/sources.list.d/
-        sudo python apt/fix.py /etc/apt/sources.list
-        sudo cat /etc/apt/sources.list
-        sudo apt update
-        sudo apt -y install build-essential:arm64 cmake:arm64 libsdl2-dev:arm64 libsdl2-image-dev:arm64 libsdl2-ttf-dev:arm64
-        
-    - name: Configure CMake (Linux aarch64)
-      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: |
-        cmake -S . -B build -DCMAKE_C_COMPILER="aarch64-linux-gnu-gcc" -DCMAKE_CXX_COMPILER="aarch64-linux-gnu-g++" -Wno-dev
-
-    - name: Build (Linux aarch64)
-      # Build your program with the given configuration
-      run: |
-        cd build
-        make
-
-    - name: Upload (Linux aarch64)
-      uses: actions/upload-artifact@v4
-      with:
-          name: "ubuntu-latest-aarch64"
-          path: build/platformer-sdl
-          if-no-files-found: ignore
-
