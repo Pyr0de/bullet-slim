@@ -51,8 +51,8 @@ jobs:
         sudo apt install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
         sudo dpkg --add-architecture arm64
         sudo cp apt/arm-cross-compile-sources.list /etc/apt/sources.list.d/
-        sudo cat /etc/apt/sources.list
         sudo python apt/fix.py /etc/apt/sources.list
+        sudo cat /etc/apt/sources.list
         sudo apt update
         sudo apt -y install build-essential:arm64 cmake:arm64 libsdl2-dev:arm64 libsdl2-image-dev:arm64 libsdl2-ttf-dev:arm64
         
