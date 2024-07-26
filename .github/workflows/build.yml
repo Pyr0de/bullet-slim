@@ -23,7 +23,7 @@ jobs:
     - uses: actions/checkout@v4
     - name: Configure dependencies (Linux x64)
       run: |
-        sudo apt -y install build-essential cmake libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+        sudo apt -y install build-essential cmake libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
         git submodule update --init --recursive
 
     - name: Configure CMake (Linux x64)
@@ -50,6 +50,7 @@ jobs:
       run: |
         sudo apt install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
         sudo dpkg --add-architecture arm64
+        sudo apt update
         sudo apt -y install build-essential:arm64 cmake:arm64 libsdl2-dev:arm64 libsdl2-image-dev:arm64 libsdl2-ttf-dev:arm64
         
     - name: Configure CMake (Linux aarch64)
