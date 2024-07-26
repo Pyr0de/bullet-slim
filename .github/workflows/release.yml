@@ -38,10 +38,7 @@ jobs:
           path: build/bullet-slim.tar.gz
           if-no-files-found: ignore
           
-    - uses: "marvinpinto/action-automatic-releases@latest"
+    - name: Release
+      uses: softprops/action-gh-release@v2
       with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: "latest"
-        prerelease: true
-        title: "Release Linux x64"
         files: build/bullet-slim.tar.gz
