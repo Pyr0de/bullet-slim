@@ -52,8 +52,6 @@ void Player::handleInputs() {
 			velY = VEL_JUMP;
 			jumping = true;
 		}
-	}else if (jumping && velY < 0) {
-		velY *= -1;
 	}
 }
 
@@ -90,6 +88,7 @@ void Player::move(std::vector<Obstacle*> obs) {
 			}else if (velX < 0) {
 				hitbox.x = obs[i]->hitbox.x + obs[i]->hitbox.w + 1;
 			}
+			knockback = false;
 			break;
 		}
 	}
