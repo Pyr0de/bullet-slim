@@ -12,6 +12,7 @@ class Texture {
 	public:
 	int w,h;
 	int rotate;
+	SDL_Point anchor = {0,0};
 
 	Texture();
 	Texture(int);
