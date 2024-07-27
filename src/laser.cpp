@@ -1,5 +1,6 @@
 #include "laser.h"
 #include "obstacle.h"
+#include "texture.h"
 #include "utils.h"
 #include <SDL_blendmode.h>
 #include <SDL_rect.h>
@@ -7,18 +8,31 @@
 #include <SDL_timer.h>
 #include <cstdio>
 
-#define LASER_WIDTH 15
-#define LASER_SPEED 10
+#define LASER_WIDTH 10
+#define LASER_SPEED 1
+
+Texture *laser = nullptr, *tail = nullptr, *head = nullptr;
+
+void loadLaserTextures(SDL_Renderer* renderer) {
+	laser = new Texture();
+	tail = new Texture();
+	head = new Texture();
+
+	laser->loadFile(renderer, "assets/laser.png");
+	tail->loadFile(renderer, "assets/laser_end.png");
+	head->loadFile(renderer, "assets/laser_head.png");
+}
 
 Laser::Laser(SDL_Renderer* render, int x, int y, bool orientation) {
-	texture.loadFile(render, "assets/laser.png");
+	if (laser == nullptr) {
+		loadLaserTextures(render);
+	}
 
 	laser_rect.x = x;
 	laser_rect.y = y;
 
 	//test
 	if (orientation) {
-		texture.setRotation(90);
 		laser_rect.h = 999999;
 		laser_rect.w = LASER_WIDTH;
 	}else {
@@ -32,6 +46,11 @@ Laser::Laser(SDL_Renderer* render, int x, int y, bool orientation) {
 }
 
 void Laser::tick(std::vector<Obstacle*> obstacles) {
+	if (morientation) {
+		laser_rect.h = 999999;
+	}else {
+		laser_rect.w = 999999;
+	}
 	for (int i = 0; i < obstacles.size(); i++) {
 		if (checkCollision(&obstacles[i]->hitbox, &laser_rect)) {
 			if (morientation) {
@@ -65,21 +84,41 @@ void Laser::tick(std::vector<Obstacle*> obstacles) {
 	}
 }
 void Laser::render(SDL_Renderer* renderer) {
+	SDL_Rect tail_rect = {laser_rect.x+laser_rect.w, laser_rect.y + laser_rect.h, 16,16};
+	SDL_Rect head_rect = {laser_rect.x, laser_rect.y, 16,16};
 	if (morientation) {
+		laser->setRotation(90);
+		tail->setRotation(90);
+		head->setRotation(90);
+
+		tail_rect.x += 3;
+		head_rect.x += 13;
+
 		laser_rect.x += laser_rect.w;
 
 		int sw = laser_rect.w;
 		laser_rect.w = laser_rect.h;
 		laser_rect.h = sw;
 		
+	}else {
+		tail_rect.y -= 13;
+		head_rect.y -= 3;
+
+		laser->setRotation(0);
+		tail->setRotation(0);
+		head->setRotation(0);
 	}
-	texture.scaleAndRender(renderer, &laser_rect);
+	laser->scaleAndRender(renderer, &laser_rect);
+	tail->scaleAndRender(renderer, &tail_rect);
+	head->scaleAndRender(renderer, &head_rect);
+
 	if (morientation) {
 		int sw = laser_rect.w;
 		laser_rect.w = laser_rect.h;
 		laser_rect.h = sw;
 
 		laser_rect.x -= laser_rect.w;
+
 	}
 }
 
