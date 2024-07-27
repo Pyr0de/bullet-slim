@@ -107,8 +107,8 @@ void main_loop() {
 		}
 
 	}
-	laser1->tick(obs);
-	laser2->tick(obs);
+	laser1->tick(obs, player);
+	laser2->tick(obs, player);
 	
 	//bullet.move(player);
 
