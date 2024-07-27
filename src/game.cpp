@@ -1,8 +1,5 @@
-#include "laser.h"
 #include <SDL_events.h>
 #include <SDL_mouse.h>
-#include <SDL_rect.h>
-#include <SDL_render.h>
 #include <cstdio>
 #include <sstream>
 #ifdef __EMSCRIPTEN__
@@ -29,8 +26,6 @@ SDL_Rect background_rect = SDL_Rect {0,0,0,0};
 
 Player* player;
 
-Laser *laser1, *laser2;
-
 Texture fps_count;
 SDL_Rect text_box = SDL_Rect {0,0,0,0};
 SDL_Color white = {255,255,255,255};
@@ -56,8 +51,6 @@ void gameStart(SDL_Renderer *r, int w, int h) {
 
 	player = new Player(render);
 	fps_count = Texture(20);
-	laser1 = new Laser(render, 200,200, 1);
-	laser2 = new Laser(render, 400,200, 0);
 #ifdef __EMSCRIPTEN__
 	emscripten_set_main_loop(main_loop, 0, 1);
 #endif
@@ -107,9 +100,6 @@ void main_loop() {
 		}
 
 	}
-	laser1->tick(obs, player);
-	laser2->tick(obs, player);
-	
 	//bullet.move(player);
 
 	//Render
@@ -124,15 +114,6 @@ void main_loop() {
 #endif
 	}
 	player->render(render);
-	
-	laser1->render(render);
-	laser2->render(render);
-
-#ifdef __DEBUG__
-	laser1->test(render);
-	laser2->test(render);
-#endif
-
 	//bullet.render(render);
 	//bullet.test(render, player);
 
