@@ -8,9 +8,7 @@
 #include <cstdio>
 
 #define LASER_WIDTH 15
-
-SDL_BlendMode blend;
-bool blendset = false;
+#define LASER_SPEED 10
 
 Laser::Laser(SDL_Renderer* render, int x, int y, bool orientation) {
 	texture.loadFile(render, "assets/laser.png");
@@ -29,6 +27,7 @@ Laser::Laser(SDL_Renderer* render, int x, int y, bool orientation) {
 	}
 	
 	//test
+	vel = LASER_SPEED;
 	morientation = orientation;
 }
 
@@ -36,19 +35,36 @@ void Laser::tick(std::vector<Obstacle*> obstacles) {
 	for (int i = 0; i < obstacles.size(); i++) {
 		if (checkCollision(&obstacles[i]->hitbox, &laser_rect)) {
 			if (morientation) {
+				if (obstacles[i]->hitbox.y - laser_rect.y < 64) {
+					continue;
+				}
 				laser_rect.h = obstacles[i]->hitbox.y - laser_rect.y;
 				laser_rect.h *= laser_rect.h > 0 ? 1 : -1;
 			}else {
+				if (obstacles[i]->hitbox.x - laser_rect.x < 64) {
+					continue;
+				}
 				laser_rect.w = obstacles[i]->hitbox.x - laser_rect.x;
 				laser_rect.w *= laser_rect.w > 0 ? 1 : -1;
 			}
 		}
 	}
+	
+	if (p1 == p2) {
+		return;
+	}
+	int* movement_axis = &laser_rect.y;
+	if (morientation) {
+		movement_axis = &laser_rect.x;
+	}
+	*movement_axis += vel;
 
+	if ((*movement_axis > p1 && *movement_axis > p2) || (*movement_axis < p1 && *movement_axis < p2)) {
+		vel *= -1;
+		*movement_axis += 2 * vel;
+	}
 }
-
 void Laser::render(SDL_Renderer* renderer) {
-	return;
 	if (morientation) {
 		laser_rect.x += laser_rect.w;
 

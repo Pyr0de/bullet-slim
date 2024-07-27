@@ -12,8 +12,10 @@ class Laser {
 	SDL_Rect laser_rect = {0,0,0,0};
 	bool morientation;
 	Uint64 startTime;
+	int vel = 0;
 
 	public:
+	int p1 = 0, p2 = 0;
 
 	Laser(SDL_Renderer* render, int x, int y, bool orientation);
 
