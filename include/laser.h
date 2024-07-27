@@ -1,6 +1,7 @@
 #pragma once
 
 #include "obstacle.h"
+#include "player.h"
 #include "texture.h"
 #include <SDL_rect.h>
 #include <SDL_render.h>
@@ -18,7 +19,7 @@ class Laser {
 
 	Laser(SDL_Renderer* render, int x, int y, bool orientation);
 
-	void tick(std::vector<Obstacle*> obstacles);
+	void tick(std::vector<Obstacle*> obstacles, Player *player);
 	void render(SDL_Renderer* renderer);
 	
 	void test(SDL_Renderer* renderer);

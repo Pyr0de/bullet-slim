@@ -1,5 +1,6 @@
 #include "laser.h"
 #include "obstacle.h"
+#include "player.h"
 #include "texture.h"
 #include "utils.h"
 #include <SDL_blendmode.h>
@@ -45,7 +46,7 @@ Laser::Laser(SDL_Renderer* render, int x, int y, bool orientation) {
 	morientation = orientation;
 }
 
-void Laser::tick(std::vector<Obstacle*> obstacles) {
+void Laser::tick(std::vector<Obstacle*> obstacles, Player *player) {
 	if (morientation) {
 		laser_rect.h = 999999;
 	}else {
@@ -66,6 +67,17 @@ void Laser::tick(std::vector<Obstacle*> obstacles) {
 				laser_rect.w = obstacles[i]->hitbox.x - laser_rect.x;
 				laser_rect.w *= laser_rect.w > 0 ? 1 : -1;
 			}
+		}
+	}
+
+	if (checkCollision(&player->hitbox, &laser_rect)) {
+		player->changeHealth(-2);
+		if (morientation) {
+			int a = player->hitbox.x + player->hitbox.w/2 - laser_rect.x + laser_rect.w/2 > 0 ? 1 : -1;
+			player->setKnockback(10 * a, 0);
+		}else {
+			int a = player->hitbox.y + player->hitbox.h/2 - laser_rect.y + laser_rect.h/2 > 0 ? 1 : -1;
+			player->setKnockback(0, 10 * a);
 		}
 	}
 	
