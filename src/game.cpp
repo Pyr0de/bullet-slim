@@ -1,6 +1,8 @@
 #include "laser.h"
 #include <SDL_events.h>
 #include <SDL_mouse.h>
+#include <SDL_rect.h>
+#include <SDL_render.h>
 #include <cstdio>
 #include <sstream>
 #ifdef __EMSCRIPTEN__
@@ -105,8 +107,8 @@ void main_loop() {
 		}
 
 	}
-	laser1->tick();
-	laser2->tick();
+	laser1->tick(obs);
+	laser2->tick(obs);
 	
 	//bullet.move(player);
 
