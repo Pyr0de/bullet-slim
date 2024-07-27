@@ -8,7 +8,6 @@
 #include <vector>
 
 class Laser {
-	Texture texture;
 	SDL_Rect laser_rect = {0,0,0,0};
 	bool morientation;
 	Uint64 startTime;
