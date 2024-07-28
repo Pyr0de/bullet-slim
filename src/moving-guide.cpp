@@ -18,6 +18,8 @@ void loadGuideTextures(SDL_Renderer *renderer) {
 	guide_end_tex->loadFile(renderer, "assets/guide_end.png");
 }
 
+MovingGuide::MovingGuide() {}
+
 MovingGuide::MovingGuide(int x1, int y1, int x2, int y2, float s) {
 	speed = s;
 	//DDA

@@ -13,6 +13,7 @@ class MovingGuide {
 	public:
 	int sticky_s = 0;
 
+	MovingGuide();
 	MovingGuide(int x1, int y1, int x2, int y2, float speed);
 
 	void getCoords(int &x, int &y);
