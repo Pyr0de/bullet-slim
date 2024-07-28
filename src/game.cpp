@@ -7,6 +7,7 @@
 #include <emscripten.h>
 #endif
 
+#include "laser.h"
 #include "moving-guide.h"
 #include "bullet.h"
 #include "game.h"
@@ -28,6 +29,8 @@ SDL_Rect background_rect = SDL_Rect {0,0,0,0};
 
 Player* player;
 
+Laser *laser;
+
 Texture fps_count;
 SDL_Rect text_box = SDL_Rect {0,0,0,0};
 SDL_Color white = {255,255,255,255};
@@ -45,7 +48,7 @@ Uint64 last = 0;
 void main_loop() {
 	last = now;
 	now = SDL_GetPerformanceCounter();
-	double deltaTime =((now - last)*1000 / (double)SDL_GetPerformanceFrequency());
+	double deltaTime =((now - last) / (double)SDL_GetPerformanceFrequency());
 
 	//FPS
 	if (frames > 30) {
@@ -84,6 +87,7 @@ void main_loop() {
 		}
 
 	}
+	laser->tick(obs, player, deltaTime);
 	//bullet.move(player);
 
 	//Render
@@ -97,6 +101,7 @@ void main_loop() {
 		bullets[i]->test(render, player);
 #endif
 	}
+	laser->render(render);
 	player->render(render);
 	//bullet.render(render);
 	//bullet.test(render, player);
@@ -118,6 +123,7 @@ void gameStart(SDL_Renderer *r, int w, int h) {
 
 	player = new Player(render);
 	fps_count = Texture(20);
+	laser = new Laser(500,100, 700, 300, 1);
 #ifdef __EMSCRIPTEN__
 	emscripten_set_main_loop(main_loop, 0, 1);
 #endif
