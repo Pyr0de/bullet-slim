@@ -1,5 +1,6 @@
 #include <SDL_events.h>
 #include <SDL_mouse.h>
+#include <SDL_timer.h>
 #include <cstdio>
 #include <sstream>
 #ifdef __EMSCRIPTEN__
@@ -36,31 +37,6 @@ int fps = 0;
 std::stringstream fps_text;
 
 bool running = true;
-
-
-void main_loop();
-
-void gameStart(SDL_Renderer *r, int w, int h) {
-	render = r;
-	width = w;
-	height = h;
-
-	createObstacles(render, &obs, "assets/level0.map");
-
-	background.loadFile(render, "assets/level0.png");
-
-	player = new Player(render);
-	fps_count = Texture(20);
-#ifdef __EMSCRIPTEN__
-	emscripten_set_main_loop(main_loop, 0, 1);
-#endif
-
-#ifndef __EMSCRIPTEN__ 
-	while (running) {
-		main_loop();
-	}
-#endif
-}
 
 void main_loop() {
 	//FPS
@@ -121,4 +97,26 @@ void main_loop() {
 	fps_count.render(render, &text_box, 1);
 	SDL_RenderPresent(render);
 	frames++;
+}
+
+void gameStart(SDL_Renderer *r, int w, int h) {
+	render = r;
+	width = w;
+	height = h;
+
+	createObstacles(render, &obs, "assets/level0.map");
+
+	background.loadFile(render, "assets/level0.png");
+
+	player = new Player(render);
+	fps_count = Texture(20);
+#ifdef __EMSCRIPTEN__
+	emscripten_set_main_loop(main_loop, 0, 1);
+#endif
+
+#ifndef __EMSCRIPTEN__ 
+	while (running) {
+		main_loop();
+	}
+#endif
 }
