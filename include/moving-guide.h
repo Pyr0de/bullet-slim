@@ -1,12 +1,19 @@
 #include <SDL_render.h>
+#include <vector>
 class MovingGuide {
-	
+
+	int dir = 1;
+	float i = 0, speed = 0;
+	std::vector<int> pX, pY;
+
+	void test(SDL_Renderer *renderer);
 	public:
-		int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
-		float speed;
 
 		MovingGuide(int x1, int y1, int x2, int y2, float speed);
-		void tick(float deltaTime);
+
+		void getCoords(int &x, int &y);
+
+		void tick(double deltaTime);
 
 		void render(SDL_Renderer *renderer);
-}
+};
