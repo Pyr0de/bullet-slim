@@ -38,7 +38,14 @@ std::stringstream fps_text;
 
 bool running = true;
 
+Uint64 now = SDL_GetPerformanceCounter();
+Uint64 last = 0;
+
 void main_loop() {
+	last = now;
+	now = SDL_GetPerformanceCounter();
+	double deltaTime =((now - last)*1000 / (double)SDL_GetPerformanceFrequency());
+
 	//FPS
 	if (frames > 30) {
 		fps = frames / ((SDL_GetTicks64() - start) / 1000.f);
