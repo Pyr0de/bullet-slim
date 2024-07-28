@@ -5,7 +5,7 @@
 #include <cmath>
 #include <cstdio>
 
-#define GUIDE_SIZE 14
+#define GUIDE_SIZE 6
 
 Texture *guide_tex = nullptr;
 Texture *guide_end_tex = nullptr;
