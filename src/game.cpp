@@ -7,6 +7,7 @@
 #include <emscripten.h>
 #endif
 
+#include "moving-guide.h"
 #include "bullet.h"
 #include "game.h"
 #include "level.h"
