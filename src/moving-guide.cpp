@@ -41,12 +41,23 @@ MovingGuide::MovingGuide(int x1, int y1, int x2, int y2, float s) {
 	angle = std::atan2(dy,dx);
 }
 
-void MovingGuide::tick(double deltaTime) {
-	i += deltaTime * speed * dir;
+void MovingGuide::tick(double deltaTime_s) {
+	if (!move) {
+		if (currSticky > sticky_s) {
+			move = true;
+			currSticky = 0;
+		}else {
+			currSticky += deltaTime_s;
+		}
+	}
+
+	i += deltaTime_s * speed * dir * move;
 	if (i > pX.size() || i < 0) {
 		dir *= -1;
-		i += deltaTime * speed * dir;
+		move = false;
+		i += deltaTime_s * speed * dir;
 	}
+
 }
 
 void MovingGuide::render(SDL_Renderer *renderer) {
