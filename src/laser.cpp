@@ -10,29 +10,23 @@
 #include <cstdio>
 
 #define LASER_WIDTH 10
-#define LASER_SPEED 1
+#define LASER_SPEED 100
 
-Texture *laser = nullptr, *tail = nullptr, *head = nullptr;
+Texture *laser_tex = nullptr, *laser_tail_tex = nullptr, *laser_head_tex = nullptr;
 
 void loadLaserTextures(SDL_Renderer* renderer) {
-	laser = new Texture();
-	tail = new Texture();
-	head = new Texture();
+	laser_tex = new Texture();
+	laser_tail_tex = new Texture();
+	laser_head_tex = new Texture();
 
-	laser->loadFile(renderer, "assets/laser.png");
-	tail->loadFile(renderer, "assets/laser_end.png");
-	head->loadFile(renderer, "assets/laser_head.png");
+	laser_tex->loadFile(renderer, "assets/laser.png");
+	laser_tail_tex->loadFile(renderer, "assets/laser_end.png");
+	laser_head_tex->loadFile(renderer, "assets/laser_head.png");
 }
 
-Laser::Laser(SDL_Renderer* render, int x, int y, bool orientation) {
-	if (laser == nullptr) {
-		loadLaserTextures(render);
-	}
+Laser::Laser(int x1, int y1, int x2, int y2, bool orientation) {
+	guide = MovingGuide(x1, y1, x2, y2, LASER_SPEED);
 
-	laser_rect.x = x;
-	laser_rect.y = y;
-
-	//test
 	if (orientation) {
 		laser_rect.h = 999999;
 		laser_rect.w = LASER_WIDTH;
@@ -40,13 +34,11 @@ Laser::Laser(SDL_Renderer* render, int x, int y, bool orientation) {
 		laser_rect.h = LASER_WIDTH;
 		laser_rect.w = 999999;
 	}
-	
-	//test
-	vel = LASER_SPEED;
+
 	morientation = orientation;
 }
 
-void Laser::tick(std::vector<Obstacle*> obstacles, Player *player) {
+void Laser::tick(std::vector<Obstacle*> obstacles, Player *player, double deltaTime) {
 	if (morientation) {
 		laser_rect.h = 999999;
 	}else {
@@ -81,30 +73,40 @@ void Laser::tick(std::vector<Obstacle*> obstacles, Player *player) {
 		}
 	}
 	
-	if (p1 == p2) {
-		return;
-	}
-	int* movement_axis = &laser_rect.y;
-	if (morientation) {
-		movement_axis = &laser_rect.x;
-	}
-	*movement_axis += vel;
+	guide.tick(deltaTime);
+	guide.getCoords(laser_rect.x, laser_rect.y);
+	laser_rect.x -= LASER_WIDTH/2;
+	laser_rect.y -= LASER_WIDTH/2;
 
-	if ((*movement_axis > p1 && *movement_axis > p2) || (*movement_axis < p1 && *movement_axis < p2)) {
-		vel *= -1;
-		*movement_axis += 2 * vel;
-	}
+	//if (p1 == p2) {
+	//	return;
+	//}
+	//int* movement_axis = &laser_rect.y;
+	//if (morientation) {
+	//	movement_axis = &laser_rect.x;
+	//}
+	//*movement_axis += vel;
+
+	//if ((*movement_axis > p1 && *movement_axis > p2) || (*movement_axis < p1 && *movement_axis < p2)) {
+	//	vel *= -1;
+	//	*movement_axis += 2 * vel;
+	//}
 }
 void Laser::render(SDL_Renderer* renderer) {
-	SDL_Rect tail_rect = {laser_rect.x+laser_rect.w, laser_rect.y + laser_rect.h, 16,16};
-	SDL_Rect head_rect = {laser_rect.x, laser_rect.y, 16,16};
-	if (morientation) {
-		laser->setRotation(90);
-		tail->setRotation(90);
-		head->setRotation(90);
+	if (laser_tex == nullptr) {
+		loadLaserTextures(renderer);
+	}
+	guide.render(renderer);
 
-		tail_rect.x += 3;
-		head_rect.x += 13;
+	SDL_Rect laser_tail_tex_rect = {laser_rect.x+laser_rect.w, laser_rect.y + laser_rect.h, 16,16};
+	SDL_Rect laser_head_tex_rect = {laser_rect.x, laser_rect.y, 16,16};
+	if (morientation) {
+		laser_tex->setRotation(90);
+		laser_tail_tex->setRotation(90);
+		laser_head_tex->setRotation(90);
+
+		laser_tail_tex_rect.x += 3;
+		laser_head_tex_rect.x += 13;
 
 		laser_rect.x += laser_rect.w;
 
@@ -113,16 +115,16 @@ void Laser::render(SDL_Renderer* renderer) {
 		laser_rect.h = sw;
 		
 	}else {
-		tail_rect.y -= 13;
-		head_rect.y -= 3;
+		laser_tail_tex_rect.y -= 13;
+		laser_head_tex_rect.y -= 3;
 
-		laser->setRotation(0);
-		tail->setRotation(0);
-		head->setRotation(0);
+		laser_tex->setRotation(0);
+		laser_tail_tex->setRotation(0);
+		laser_head_tex->setRotation(0);
 	}
-	laser->scaleAndRender(renderer, &laser_rect);
-	tail->scaleAndRender(renderer, &tail_rect);
-	head->scaleAndRender(renderer, &head_rect);
+	laser_tex->scaleAndRender(renderer, &laser_rect);
+	laser_tail_tex->scaleAndRender(renderer, &laser_tail_tex_rect);
+	laser_head_tex->scaleAndRender(renderer, &laser_head_tex_rect);
 
 	if (morientation) {
 		int sw = laser_rect.w;
