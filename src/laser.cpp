@@ -1,5 +1,4 @@
 #include "laser.h"
-#include "obstacle.h"
 #include "player.h"
 #include "texture.h"
 #include "utils.h"
@@ -38,7 +37,7 @@ Laser::Laser(int x1, int y1, int x2, int y2, bool orientation) {
 	morientation = orientation;
 }
 
-void Laser::tick(std::vector<Obstacle*> obstacles, Player *player, double deltaTime) {
+void Laser::tick(std::vector<SDL_Rect> &obstacles, Player *player, double deltaTime) {
 	
 	guide.tick(deltaTime);
 	guide.getCoords(laser_rect.x, laser_rect.y);
@@ -51,18 +50,18 @@ void Laser::tick(std::vector<Obstacle*> obstacles, Player *player, double deltaT
 		laser_rect.w = 999999;
 	}
 	for (int i = 0; i < obstacles.size(); i++) {
-		if (checkCollision(&obstacles[i]->hitbox, &laser_rect)) {
+		if (checkCollision(&obstacles[i], &laser_rect)) {
 			if (morientation) {
-				if (obstacles[i]->hitbox.y - laser_rect.y < 64) {
+				if (obstacles[i].y - laser_rect.y < 64) {
 					continue;
 				}
-				laser_rect.h = obstacles[i]->hitbox.y - laser_rect.y;
+				laser_rect.h = obstacles[i].y - laser_rect.y;
 				laser_rect.h *= laser_rect.h > 0 ? 1 : -1;
 			}else {
-				if (obstacles[i]->hitbox.x - laser_rect.x < 64) {
+				if (obstacles[i].x - laser_rect.x < 64) {
 					continue;
 				}
-				laser_rect.w = obstacles[i]->hitbox.x - laser_rect.x;
+				laser_rect.w = obstacles[i].x - laser_rect.x;
 				laser_rect.w *= laser_rect.w > 0 ? 1 : -1;
 			}
 		}
