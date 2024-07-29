@@ -1,5 +1,4 @@
 #include "level.h"
-#include "obstacle.h"
 #include <SDL_rect.h>
 #include <SDL_render.h>
 #include <SDL_rwops.h>
@@ -31,7 +30,7 @@ void readfile(std::string file, uint8_t* data) {
 
 
 
-void createObstacles(SDL_Renderer* render, std::vector<Obstacle*>* obstacles, std::string file) {
+void createObstacles(SDL_Renderer* render, std::vector<SDL_Rect>* obstacles, std::string file) {
 	uint8_t data[BYTES_PER_LEVEL];
 	readfile(file, data);
 
@@ -53,6 +52,6 @@ void createObstacles(SDL_Renderer* render, std::vector<Obstacle*>* obstacles, st
 			}
 		}
 		SDL_Rect rect = { (i % LEVEL_WIDTH) * TILE_SIDE, (i / LEVEL_WIDTH) * TILE_SIDE, w * TILE_SIDE, h * TILE_SIDE};
-		obstacles->push_back(new Obstacle(render, rect, data[i]));
+		obstacles->push_back(rect);
 	}
 }
