@@ -1,5 +1,6 @@
 #include <SDL_events.h>
 #include <SDL_mouse.h>
+#include <SDL_rect.h>
 #include <SDL_timer.h>
 #include <cstdio>
 #include <sstream>
@@ -12,7 +13,6 @@
 #include "bullet.h"
 #include "game.h"
 #include "level.h"
-#include "obstacle.h"
 #include "player.h"
 #include "texture.h"
 
@@ -21,7 +21,7 @@ const int FPS_CAP = 1000 / 60;
 SDL_Renderer* render;
 int width = 0, height = 0;
 
-std::vector<Obstacle*> obs = {};
+std::vector<SDL_Rect> obs = {};
 std::vector<Bullet*> bullets = {};
 
 Texture background = Texture();
