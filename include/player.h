@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "texture.h"
-#include "obstacle.h"
 
 class Player {
 	Texture texture;
@@ -31,6 +30,6 @@ class Player {
 
 	void handleInputs();
 	void render(SDL_Renderer*);
-	void move(std::vector<Obstacle*>);
+	void move(std::vector<SDL_Rect>&);
 
 };
