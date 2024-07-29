@@ -39,6 +39,12 @@ Laser::Laser(int x1, int y1, int x2, int y2, bool orientation) {
 }
 
 void Laser::tick(std::vector<Obstacle*> obstacles, Player *player, double deltaTime) {
+	
+	guide.tick(deltaTime);
+	guide.getCoords(laser_rect.x, laser_rect.y);
+	laser_rect.x -= LASER_WIDTH/2;
+	laser_rect.y -= LASER_WIDTH/2;
+
 	if (morientation) {
 		laser_rect.h = 999999;
 	}else {
@@ -73,10 +79,7 @@ void Laser::tick(std::vector<Obstacle*> obstacles, Player *player, double deltaT
 		}
 	}
 	
-	guide.tick(deltaTime);
-	guide.getCoords(laser_rect.x, laser_rect.y);
-	laser_rect.x -= LASER_WIDTH/2;
-	laser_rect.y -= LASER_WIDTH/2;
+
 
 	//if (p1 == p2) {
 	//	return;
