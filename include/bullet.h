@@ -21,7 +21,7 @@ class Bullet {
 	public:
 	Bullet(SDL_Renderer* render, int x, int y, Player* player);
 	void render(SDL_Renderer* render);
-	void move(Player* player, std::vector<Obstacle*> obstacles);
+	void move(Player* player, std::vector<SDL_Rect> &obstacles);
 	bool explode(Player* player);
 
 	void test(SDL_Renderer* render, Player* player);
