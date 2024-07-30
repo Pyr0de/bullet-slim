@@ -76,16 +76,16 @@ void Player::render(SDL_Renderer* render) {
 	SDL_RenderDrawRect(render, &hitbox);
 }
 
-void Player::move(std::vector<SDL_Rect> &obs) {
+void Player::move(std::vector<SDL_Rect*> &obs) {
 
 	hitbox.x += velX;
 	for (int i = 0; i < obs.size(); i++) {
-		if (checkCollision(&hitbox, &obs[i])) {
+		if (checkCollision(&hitbox, obs[i])) {
 			hitbox.x -= velX;
 			if (velX > 0) {
-				hitbox.x = obs[i].x - hitbox.w - 1;
+				hitbox.x = obs[i]->x - hitbox.w - 1;
 			}else if (velX < 0) {
-				hitbox.x = obs[i].x + obs[i].w + 1;
+				hitbox.x = obs[i]->x + obs[i]->w + 1;
 			}
 			knockback = false;
 			break;
@@ -99,15 +99,15 @@ void Player::move(std::vector<SDL_Rect> &obs) {
 
 	hitbox.y += velY;	
 	for (int i = 0; i < obs.size(); i++) {
-		if (checkCollision(&hitbox, &obs[i])) {
+		if (checkCollision(&hitbox, obs[i])) {
 			hitbox.y -= velY;
 			
 			if (velY > 0) {
 				jumping = false;
 
-				hitbox.y = obs[i].y - hitbox.h - 1;
+				hitbox.y = obs[i]->y - hitbox.h - 1;
 			}else if (velY < 0) {
-				hitbox.y = obs[i].y + obs[i].h + 1;
+				hitbox.y = obs[i]->y + obs[i]->h + 1;
 			}
 			
 			velY = 1;

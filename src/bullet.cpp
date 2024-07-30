@@ -112,7 +112,7 @@ void Bullet::render(SDL_Renderer* render) {
 	}
 }
 
-void Bullet::move(Player* player, std::vector<SDL_Rect> &obstacles){
+void Bullet::move(Player* player, std::vector<SDL_Rect*> &obstacles){
 	//printf("%f\n", angle);
 	if (explode_start != 0) {
 		return;
@@ -128,7 +128,7 @@ void Bullet::move(Player* player, std::vector<SDL_Rect> &obstacles){
 		explode_start = SDL_GetTicks64();
 	
 	for(int i = 0; i < obstacles.size() && !explode_start; i++) {
-		if (checkCollision(&hitbox, &obstacles[i])) {
+		if (checkCollision(&hitbox, obstacles[i])) {
 			explode_start = SDL_GetTicks64();
 			break;
 		}

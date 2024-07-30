@@ -18,7 +18,7 @@ class Laser {
 
 	Laser(int x1, int y1, int x2, int y2, bool orientation);
 
-	void tick(std::vector<SDL_Rect> &obstacles, Player *player, double deltaTime);
+	void tick(std::vector<SDL_Rect*> &obstacles, Player *player, double deltaTime);
 	void render(SDL_Renderer* renderer);
 	
 	void test(SDL_Renderer* renderer);

@@ -6,4 +6,4 @@
 #include <string>
 #include <vector>
 
-void createObstacles(SDL_Renderer* render, std::vector<SDL_Rect>* obstacles, std::string file);
+void createObstacles(SDL_Renderer* render, std::vector<SDL_Rect*>* obstacles, std::string file);
