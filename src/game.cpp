@@ -21,7 +21,7 @@ const int FPS_CAP = 1000 / 60;
 SDL_Renderer* render;
 int width = 0, height = 0;
 
-std::vector<SDL_Rect> obs = {};
+std::vector<SDL_Rect*> obs = {};
 std::vector<Bullet*> bullets = {};
 
 Texture background = Texture();
