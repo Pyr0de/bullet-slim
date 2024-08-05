@@ -104,7 +104,6 @@ void Player::move(std::vector<SDL_Rect*> &obs) {
 			
 			if (velY > 0) {
 				jumping = false;
-
 				hitbox.y = obs[i]->y - hitbox.h - 1;
 			}else if (velY < 0) {
 				hitbox.y = obs[i]->y + obs[i]->h + 1;
