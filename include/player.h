@@ -9,7 +9,6 @@
 class Player {
 	Texture texture;
 
-	int velX, velY;
 
 	bool jumping;
 	bool knockback;
@@ -20,7 +19,7 @@ class Player {
 	int damageCooldown = 0;
 
 	public:
-
+	int velX, velY;
 	SDL_Rect hitbox;
 
 	Player(SDL_Renderer*);
@@ -30,6 +29,6 @@ class Player {
 
 	void handleInputs();
 	void render(SDL_Renderer*);
-	void move(std::vector<SDL_Rect>&);
+	void move(std::vector<SDL_Rect*>&);
 
 };

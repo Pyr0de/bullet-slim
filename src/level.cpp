@@ -30,7 +30,7 @@ void readfile(std::string file, uint8_t* data) {
 
 
 
-void createObstacles(SDL_Renderer* render, std::vector<SDL_Rect>* obstacles, std::string file) {
+void createObstacles(SDL_Renderer* render, std::vector<SDL_Rect*>* obstacles, std::string file) {
 	uint8_t data[BYTES_PER_LEVEL];
 	readfile(file, data);
 
@@ -51,7 +51,7 @@ void createObstacles(SDL_Renderer* render, std::vector<SDL_Rect>* obstacles, std
 				h++;
 			}
 		}
-		SDL_Rect rect = { (i % LEVEL_WIDTH) * TILE_SIDE, (i / LEVEL_WIDTH) * TILE_SIDE, w * TILE_SIDE, h * TILE_SIDE};
+		SDL_Rect* rect = new SDL_Rect{ (i % LEVEL_WIDTH) * TILE_SIDE, (i / LEVEL_WIDTH) * TILE_SIDE, w * TILE_SIDE, h * TILE_SIDE};
 		obstacles->push_back(rect);
 	}
 }
