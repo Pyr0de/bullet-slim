@@ -6,9 +6,11 @@
 #include <cstdio>
 
 #include "player.h"
+#include "rock.h"
 #include "utils.h"
 
 #define VEL_X 10
+#define VEL_X_SLOW 5
 #define VEL_JUMP -15
 
 #define HEALTH 20
@@ -34,24 +36,31 @@ Player::Player(SDL_Renderer* render) {
 }
 
 void Player::handleInputs() {
+	auto *keyboardState = SDL_GetKeyboardState(nullptr);
+	
+	tryEat = keyboardState[SDL_SCANCODE_E] && !eat_down;
+	eat_down = keyboardState[SDL_SCANCODE_E];
+
 	if (knockback) {
 		return;
 	}
+	int vx = consumed ? VEL_X_SLOW : VEL_X;
+	int vy = consumed ? 0 : VEL_JUMP;
 
-	auto *keyboardState = SDL_GetKeyboardState(nullptr);
 	if ((keyboardState[SDL_SCANCODE_A] || keyboardState[SDL_SCANCODE_LEFT]) && velX <= 0) {
-		velX = -VEL_X;
+		velX = -vx;
 	}else if ((keyboardState[SDL_SCANCODE_D] || keyboardState[SDL_SCANCODE_RIGHT]) && velX >= 0) {
-		velX = VEL_X;
+		velX = vx;
 	}else {
 		velX = 0;
 	}
 	if (keyboardState[SDL_SCANCODE_SPACE] || keyboardState[SDL_SCANCODE_UP]) {
 		if (!jumping) {
-			velY = VEL_JUMP;
+			velY = vy;
 			jumping = true;
 		}
 	}
+
 }
 
 void Player::render(SDL_Renderer* render) {
@@ -77,6 +86,7 @@ void Player::render(SDL_Renderer* render) {
 }
 
 void Player::move(std::vector<SDL_Rect*> &obs) {
+
 
 	hitbox.x += velX;
 	for (int i = 0; i < obs.size(); i++) {
@@ -122,7 +132,10 @@ void Player::move(std::vector<SDL_Rect*> &obs) {
 		knockback = false;
 	}
 	//printf("%d %d\n", velX, velY);
-	
+	if (consumed) {
+		consumed->hitbox.x = hitbox.x + hitbox.w/2 - consumed->hitbox.w/2;
+		consumed->hitbox.y = hitbox.y + hitbox.h/2 - consumed->hitbox.h/2;
+	}
 }
 
 void Player::changeHealth(int h) {
@@ -150,5 +163,33 @@ void Player::setKnockback(int x, int y) {
 	knockback = true;
 	if (y < 0) {
 		jumping = true;
+	}
+}
+
+void Player::eatRock(std::vector<Rock*> &rocks) {
+	if (!tryEat) {
+		return;
+	}
+	if (consumed != nullptr) {
+		consumed->grounded = false;
+		consumed = nullptr;
+		return;
+	}
+
+	for (Rock* i: rocks) {
+		if (checkCollision(&i->hitbox, &hitbox)) {
+			int rx = i->hitbox.x + i->hitbox.w/2;
+			int ry = i->hitbox.y + i->hitbox.h/2;
+			int px = hitbox.x + hitbox.w/2;
+			int py = hitbox.y + hitbox.h/2;
+
+			if (distance(rx, ry, px, py) < 25) {
+				consumed = i;
+				hitbox.x = rx - hitbox.w/2;
+				hitbox.y = ry - hitbox.h/2;
+				break;
+			}
+
+		}
 	}
 }

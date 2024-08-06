@@ -4,11 +4,11 @@
 #include <SDL_render.h>
 #include <vector>
 
+#include "rock.h"
 #include "texture.h"
 
 class Player {
 	Texture texture;
-
 
 	bool jumping;
 	bool knockback;
@@ -17,6 +17,9 @@ class Player {
 	//SDL_Rect healthbar;
 	int health;
 	int damageCooldown = 0;
+
+	bool tryEat = false, eat_down = false;
+	Rock* consumed = nullptr;
 
 	public:
 	int velX, velY;
@@ -31,4 +34,5 @@ class Player {
 	void render(SDL_Renderer*);
 	void move(std::vector<SDL_Rect*>&);
 
+	void eatRock(std::vector<Rock*> &rocks);
 };
