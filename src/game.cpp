@@ -1,3 +1,4 @@
+#include "rock.h"
 #include <SDL_events.h>
 #include <SDL_mouse.h>
 #include <SDL_rect.h>
@@ -22,7 +23,7 @@ SDL_Renderer* render;
 int width = 0, height = 0;
 
 std::vector<SDL_Rect*> obs = {};
-std::vector<Bullet*> bullets = {};
+std::vector<Rock*> bullets = {};
 
 Texture background = Texture();
 SDL_Rect background_rect = SDL_Rect {0,0,0,0};
@@ -67,7 +68,7 @@ void main_loop() {
 		if (e.type == SDL_MOUSEBUTTONDOWN) {
 			int x = 0, y = 0;
 			SDL_GetMouseState(&x, &y);
-			bullets.push_back(new Bullet(render, x, y, player));
+			bullets.push_back(new Rock(x, y));
 		}
 	}
 
@@ -77,14 +78,16 @@ void main_loop() {
 	
 	//Game Tick
 	player->handleInputs();
+	player->eatRock(bullets);
 	player->move(obs);
 	for (int i = 0; i < bullets.size(); i++) {
+		bullets[i]->tick(deltaTime, obs);
 
-		bullets[i]->move(player, obs);
-		if (bullets[i]->explode(player)){
-			delete bullets[i];
-			bullets.erase(bullets.begin() + i);
-		}
+		//bullets[i]->move(player, obs);
+		//if (bullets[i]->explode(player)){
+		//	delete bullets[i];
+		//	bullets.erase(bullets.begin() + i);
+		//}
 
 	}
 	laser->tick(obs, player, deltaTime);
@@ -97,9 +100,7 @@ void main_loop() {
 	background.render(render, &background_rect, 1);
 	for (int i = 0; i < bullets.size(); i++) {
 		bullets[i]->render(render);
-#ifdef __DEBUG__
-		bullets[i]->test(render, player);
-#endif
+
 	}
 	laser->render(render);
 	player->render(render);
@@ -124,6 +125,7 @@ void gameStart(SDL_Renderer *r, int w, int h) {
 	player = new Player(render);
 	fps_count = Texture(20);
 	laser = new Laser(500,100, 700, 300, 1);
+	//rock = new Rock();
 #ifdef __EMSCRIPTEN__
 	emscripten_set_main_loop(main_loop, 0, 1);
 #endif
