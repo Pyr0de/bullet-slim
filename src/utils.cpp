@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cmath>
 
 #include "utils.h"
 
@@ -19,3 +20,8 @@ bool checkCollision(SDL_Rect* rect1, SDL_Rect* rect2) {
 	return true ; 
 }
 
+double distance(double x1, double y1, double x2, double y2) {
+	double a = std::pow((x2 - x1), 2) + std::pow((y2 - y1), 2);
+
+	return std::sqrt(a);
+}
