@@ -24,6 +24,7 @@ int width = 0, height = 0;
 
 std::vector<SDL_Rect*> obs = {};
 std::vector<Rock*> rocks = {};
+std::vector<Bullet*> bullets = {};
 
 Texture background = Texture();
 SDL_Rect background_rect = SDL_Rect {0,0,0,0};
@@ -68,7 +69,11 @@ void main_loop() {
 		if (e.type == SDL_MOUSEBUTTONDOWN) {
 			int x = 0, y = 0;
 			SDL_GetMouseState(&x, &y);
-			rocks.push_back(new Rock(x, y));
+			if (e.button.button == SDL_BUTTON_LEFT) {
+				bullets.push_back(new Bullet(render, x, y, player));
+			}else if (e.button.button == SDL_BUTTON_RIGHT) {
+				rocks.push_back(new Rock(x, y));
+			}
 		}
 	}
 
@@ -93,6 +98,13 @@ void main_loop() {
 		//}
 
 	}
+	for (int i = 0; i < bullets.size(); i++) {
+		bullets[i]->move(player, obs);
+		if (bullets[i]->explode(player)) {
+			delete bullets[i];
+			bullets.erase(bullets.begin() + i);
+		}
+	}
 	laser->tick(obs, player, deltaTime);
 	//bullet.move(player);
 
@@ -103,7 +115,9 @@ void main_loop() {
 	background.render(render, &background_rect, 1);
 	for (int i = 0; i < rocks.size(); i++) {
 		rocks[i]->render(render);
-
+	}
+	for (int i = 0; i < bullets.size(); i++) {
+		bullets[i]->render(render);
 	}
 	laser->render(render);
 	player->render(render);
