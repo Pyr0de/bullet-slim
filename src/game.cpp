@@ -31,7 +31,7 @@ SDL_Rect background_rect = SDL_Rect {0,0,0,0};
 
 Player* player;
 
-Laser *laser;
+Laser *laser1, *laser2;
 
 Texture fps_count;
 SDL_Rect text_box = SDL_Rect {0,0,0,0};
@@ -73,7 +73,9 @@ void main_loop() {
 				bullets.push_back(new Bullet(render, x, y, player));
 			}else if (e.button.button == SDL_BUTTON_RIGHT) {
 				rocks.push_back(new Rock(x, y));
-			}
+			}else if (e.button.button == SDL_BUTTON_MIDDLE) {
+				printf("x = %d y = %d\n", x, y);
+			} 
 		}
 	}
 
@@ -90,13 +92,6 @@ void main_loop() {
 			delete rocks[i];
 			rocks.erase(rocks.begin() + i);
 		}
-
-		//bullets[i]->move(player, obs);
-		//if (bullets[i]->explode(player)){
-		//	delete bullets[i];
-		//	bullets.erase(bullets.begin() + i);
-		//}
-
 	}
 	for (int i = 0; i < bullets.size(); i++) {
 		bullets[i]->move(player, obs);
@@ -105,7 +100,8 @@ void main_loop() {
 			bullets.erase(bullets.begin() + i);
 		}
 	}
-	laser->tick(obs, player, deltaTime);
+	laser1->tick(obs, player, deltaTime);
+	laser2->tick(obs, player, deltaTime);
 	//bullet.move(player);
 
 	//Render
@@ -119,10 +115,9 @@ void main_loop() {
 	for (int i = 0; i < bullets.size(); i++) {
 		bullets[i]->render(render);
 	}
-	laser->render(render);
+	laser1->render(render);
+	laser2->render(render);
 	player->render(render);
-	//bullet.render(render);
-	//bullet.test(render, player);
 
 
 	fps_count.render(render, &text_box, 1);
@@ -135,14 +130,14 @@ void gameStart(SDL_Renderer *r, int w, int h) {
 	width = w;
 	height = h;
 
-	createObstacles(render, &obs, "assets/level0.map");
+	createObstacles(render, &obs, "assets/level2.map");
 
-	background.loadFile(render, "assets/level0.png");
+	background.loadFile(render, "assets/level2.png");
 
 	player = new Player(render);
 	fps_count = Texture(20);
-	laser = new Laser(500,100, 700, 300, 1);
-	//rock = new Rock();
+	laser1 = new Laser(900, 100, 1100, 300, 1);
+	laser2 = new Laser(400, 90, 400, 500, 0);
 #ifdef __EMSCRIPTEN__
 	emscripten_set_main_loop(main_loop, 0, 1);
 #endif
