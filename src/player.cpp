@@ -6,20 +6,22 @@
 #include <cstdio>
 
 #include "player.h"
+#include "rock.h"
 #include "utils.h"
 
 #define VEL_X 10
+#define VEL_X_SLOW 5
 #define VEL_JUMP -15
 
 #define HEALTH 20
 #define HEALTHBAR_X 70
 #define HEALTHBAR_Y 10
 
-#define DAMAGE_COOLDOWN 60
+#define DAMAGE_COOLDOWN 30
 
 Player::Player(SDL_Renderer* render) {
 	texture = Texture();
-	texture.loadFile(render, "assets/slime.png");
+	texture.loadSpriteSheet(render, "assets/slime.png", 2);
 
 	hitbox = {70,70,0,0};
 	velX = 0;
@@ -34,24 +36,31 @@ Player::Player(SDL_Renderer* render) {
 }
 
 void Player::handleInputs() {
+	auto *keyboardState = SDL_GetKeyboardState(nullptr);
+	
+	tryEat = keyboardState[SDL_SCANCODE_E] && !eat_down;
+	eat_down = keyboardState[SDL_SCANCODE_E];
+
 	if (knockback) {
 		return;
 	}
+	int vx = consumed ? VEL_X_SLOW : VEL_X;
+	int vy = consumed ? 0 : VEL_JUMP;
 
-	auto *keyboardState = SDL_GetKeyboardState(nullptr);
 	if ((keyboardState[SDL_SCANCODE_A] || keyboardState[SDL_SCANCODE_LEFT]) && velX <= 0) {
-		velX = -VEL_X;
+		velX = -vx;
 	}else if ((keyboardState[SDL_SCANCODE_D] || keyboardState[SDL_SCANCODE_RIGHT]) && velX >= 0) {
-		velX = VEL_X;
+		velX = vx;
 	}else {
 		velX = 0;
 	}
 	if (keyboardState[SDL_SCANCODE_SPACE] || keyboardState[SDL_SCANCODE_UP]) {
 		if (!jumping) {
-			velY = VEL_JUMP;
+			velY = vy;
 			jumping = true;
 		}
 	}
+
 }
 
 void Player::render(SDL_Renderer* render) {
@@ -62,7 +71,7 @@ void Player::render(SDL_Renderer* render) {
 	SDL_Rect health_rect = {HEALTHBAR_X + 27, HEALTHBAR_Y + 10, health * 10, 32};
 	SDL_Rect healthbar = {HEALTHBAR_X, HEALTHBAR_Y, 0, 0};
 
-	texture.render(render, &hitbox, 1);
+	texture.renderSprite(render, &hitbox, 1, consumed ? 1 : 0);
 
 	healthbar_img.renderSprite(render, &healthbar, 1, 1);
 
@@ -77,6 +86,7 @@ void Player::render(SDL_Renderer* render) {
 }
 
 void Player::move(std::vector<SDL_Rect*> &obs) {
+
 
 	hitbox.x += velX;
 	for (int i = 0; i < obs.size(); i++) {
@@ -122,7 +132,10 @@ void Player::move(std::vector<SDL_Rect*> &obs) {
 		knockback = false;
 	}
 	//printf("%d %d\n", velX, velY);
-	
+	if (consumed) {
+		consumed->hitbox.x = hitbox.x + hitbox.w/2 - consumed->hitbox.w/2;
+		consumed->hitbox.y = hitbox.y + hitbox.h/2 - consumed->hitbox.h/2;
+	}
 }
 
 void Player::changeHealth(int h) {
@@ -151,4 +164,41 @@ void Player::setKnockback(int x, int y) {
 	if (y < 0) {
 		jumping = true;
 	}
+}
+
+void Player::eatRock(std::vector<Rock*> &rocks) {
+	for (Rock* i: rocks) {
+		if (checkCollision(&i->hitbox, &hitbox) && !i->breakrock) {
+			int rx = i->hitbox.x + i->hitbox.w/2;
+			int ry = i->hitbox.y + i->hitbox.h/2;
+			int px = hitbox.x + hitbox.w/2;
+			int py = hitbox.y + hitbox.h/2;
+
+			if (rx-py < 0 && consumed != i && i->velY > 300 && !i->breakrock) {
+				changeHealth(-5);
+				i->breakrock = true;
+			}
+
+			if (!tryEat) {
+				continue;
+			}
+			if (consumed != nullptr) {
+				consumed->picked = false;
+				consumed->grounded = false;
+				consumed = nullptr;
+				tryEat = false;
+				continue;
+			}
+			if (distance(rx, ry, px, py) < 25) {
+				consumed = i;
+				consumed->grounded = true;
+				consumed->hitbox.x = px - consumed->hitbox.w/2;
+				consumed->hitbox.y = py - consumed->hitbox.h/2;
+				tryEat = false;
+				continue;
+			}
+
+		}
+	}
+
 }
