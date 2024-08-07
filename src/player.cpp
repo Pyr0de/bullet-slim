@@ -168,13 +168,13 @@ void Player::setKnockback(int x, int y) {
 
 void Player::eatRock(std::vector<Rock*> &rocks) {
 	for (Rock* i: rocks) {
-		if (checkCollision(&i->hitbox, &hitbox)) {
+		if (checkCollision(&i->hitbox, &hitbox) && !i->breakrock) {
 			int rx = i->hitbox.x + i->hitbox.w/2;
 			int ry = i->hitbox.y + i->hitbox.h/2;
 			int px = hitbox.x + hitbox.w/2;
 			int py = hitbox.y + hitbox.h/2;
 
-			if (rx-py < 0 && consumed != i && !i->grounded && !i->breakrock) {
+			if (rx-py < 0 && consumed != i && i->velY > 300 && !i->breakrock) {
 				changeHealth(-5);
 				i->breakrock = true;
 			}
@@ -184,12 +184,13 @@ void Player::eatRock(std::vector<Rock*> &rocks) {
 			}
 			if (consumed != nullptr) {
 				consumed->picked = false;
+				consumed->grounded = false;
 				consumed = nullptr;
 				break;
 			}
 			if (distance(rx, ry, px, py) < 25) {
 				consumed = i;
-				consumed->picked = true;
+				consumed->grounded = true;
 				hitbox.x = rx - hitbox.w/2;
 				hitbox.y = ry - hitbox.h/2;
 				break;

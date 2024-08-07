@@ -9,7 +9,7 @@
 #include <ctime>
 #include <vector>
 
-#define FALL_SPEED 500
+#define FALL_ACC 500;
 
 Texture* rock_tex = nullptr;
 
@@ -40,21 +40,28 @@ bool Rock::tick(double deltaTime, std::vector<SDL_Rect*> &obstacles) {
 
 		return false;
 	}
-	if (grounded && picked) {
-		return false;
-	}
 
-	hitbox.y += FALL_SPEED * deltaTime;
+	velY += !grounded * deltaTime * FALL_ACC;
+	hitbox.y += velY * deltaTime;
 	for (SDL_Rect* i: obstacles) {
 		if (checkCollision(&hitbox, i)) {
 			hitbox.y = i->y - hitbox.h;
-			if (!grounded) {
+			grounded = true;
+			if (velY > 300) {
 				srand(time(0));
-				grounded = true;
 				breakrock = (rand() % 10) > 3;
+
 			}
+			velY = 0;
+			break;
 		}
 	}
+
+			//if (!grounded) {
+			//	srand(time(0));
+			//	grounded = true;
+			//	breakrock = (rand() % 10) > 3;
+			//}
 //	if (checkCollision(&player->hitbox, &hitbox) && !grounded) {
 //		srand(time(0));
 //		return (rand() % 10) > 3;

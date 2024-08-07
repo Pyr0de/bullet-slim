@@ -6,8 +6,9 @@
 class Rock {
 	double animationTime = 0;
 	int currSprite = 0;
-
+	
 	public:
+	double velY = 0;
 	bool grounded = false, breakrock = false;
 	bool picked = false;
 	SDL_Rect hitbox = {0,0,0,0};
