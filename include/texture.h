@@ -30,4 +30,5 @@ class Texture {
 	void render(SDL_Renderer* render, SDL_Rect* rect, int zoom);
 	void renderSprite(SDL_Renderer* render, SDL_Rect* rect, int zoom, int idx);
 	void scaleAndRender(SDL_Renderer* render, SDL_Rect* rect);
+	void scaleAndRenderSprite(SDL_Renderer* render, SDL_Rect* rect, int index);
 };

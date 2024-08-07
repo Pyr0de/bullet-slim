@@ -112,6 +112,15 @@ void Texture::scaleAndRender(SDL_Renderer* render, SDL_Rect* rect) {
 	SDL_RenderCopyEx(render, texture, nullptr, rect, rotate, &anchor, flip);
 }
 
+void Texture::scaleAndRenderSprite(SDL_Renderer* render, SDL_Rect* rect, int index) {
+	if (!texture) {
+		return;
+	}	
+	SDL_Rect src = {0, h * index / numberOfSprites, w, h / numberOfSprites};
+
+	SDL_RenderCopyEx(render, texture, &src, rect, rotate, nullptr, flip);
+}
+
 void Texture::setRotation(int angle){
 	rotate = angle;
 }
