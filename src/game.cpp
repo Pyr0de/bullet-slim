@@ -23,7 +23,7 @@ SDL_Renderer* render;
 int width = 0, height = 0;
 
 std::vector<SDL_Rect*> obs = {};
-std::vector<Rock*> bullets = {};
+std::vector<Rock*> rocks = {};
 
 Texture background = Texture();
 SDL_Rect background_rect = SDL_Rect {0,0,0,0};
@@ -68,7 +68,7 @@ void main_loop() {
 		if (e.type == SDL_MOUSEBUTTONDOWN) {
 			int x = 0, y = 0;
 			SDL_GetMouseState(&x, &y);
-			bullets.push_back(new Rock(x, y));
+			rocks.push_back(new Rock(x, y));
 		}
 	}
 
@@ -78,12 +78,12 @@ void main_loop() {
 	
 	//Game Tick
 	player->handleInputs();
-	player->eatRock(bullets);
+	player->eatRock(rocks);
 	player->move(obs);
-	for (int i = 0; i < bullets.size(); i++) {
-		if (bullets[i]->tick(deltaTime, obs)) {
-			delete bullets[i];
-			bullets.erase(bullets.begin() + i);
+	for (int i = 0; i < rocks.size(); i++) {
+		if (rocks[i]->tick(deltaTime, obs)) {
+			delete rocks[i];
+			rocks.erase(rocks.begin() + i);
 		}
 
 		//bullets[i]->move(player, obs);
@@ -101,8 +101,8 @@ void main_loop() {
 	SDL_RenderClear(render);
 
 	background.render(render, &background_rect, 1);
-	for (int i = 0; i < bullets.size(); i++) {
-		bullets[i]->render(render);
+	for (int i = 0; i < rocks.size(); i++) {
+		rocks[i]->render(render);
 
 	}
 	laser->render(render);
