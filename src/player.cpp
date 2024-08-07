@@ -17,7 +17,7 @@
 #define HEALTHBAR_X 70
 #define HEALTHBAR_Y 10
 
-#define DAMAGE_COOLDOWN 60
+#define DAMAGE_COOLDOWN 30
 
 Player::Player(SDL_Renderer* render) {
 	texture = Texture();
@@ -167,15 +167,6 @@ void Player::setKnockback(int x, int y) {
 }
 
 void Player::eatRock(std::vector<Rock*> &rocks) {
-	if (!tryEat) {
-		return;
-	}
-	if (consumed != nullptr) {
-		consumed->grounded = false;
-		consumed = nullptr;
-		return;
-	}
-
 	for (Rock* i: rocks) {
 		if (checkCollision(&i->hitbox, &hitbox)) {
 			int rx = i->hitbox.x + i->hitbox.w/2;
@@ -183,8 +174,22 @@ void Player::eatRock(std::vector<Rock*> &rocks) {
 			int px = hitbox.x + hitbox.w/2;
 			int py = hitbox.y + hitbox.h/2;
 
+			if (rx-py < 0 && consumed != i && !i->grounded) {
+				changeHealth(-5);
+				i->breakrock = true;
+			}
+
+			if (!tryEat) {
+				break;
+			}
+			if (consumed != nullptr) {
+				consumed->picked = false;
+				consumed = nullptr;
+				break;
+			}
 			if (distance(rx, ry, px, py) < 25) {
 				consumed = i;
+				consumed->picked = true;
 				hitbox.x = rx - hitbox.w/2;
 				hitbox.y = ry - hitbox.h/2;
 				break;
@@ -192,4 +197,5 @@ void Player::eatRock(std::vector<Rock*> &rocks) {
 
 		}
 	}
+
 }

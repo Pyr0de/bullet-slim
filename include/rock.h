@@ -4,9 +4,9 @@
 #include <SDL_render.h>
 #include <vector>
 class Rock {
-
 	public:
-	bool grounded = false;
+	bool grounded = false, breakrock = false;
+	bool picked = false;
 	SDL_Rect hitbox = {0,0,0,0};
 
 	Rock(int x, int y);

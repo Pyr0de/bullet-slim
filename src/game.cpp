@@ -81,7 +81,10 @@ void main_loop() {
 	player->eatRock(bullets);
 	player->move(obs);
 	for (int i = 0; i < bullets.size(); i++) {
-		bullets[i]->tick(deltaTime, obs);
+		if (bullets[i]->tick(deltaTime, obs)) {
+			delete bullets[i];
+			bullets.erase(bullets.begin() + i);
+		}
 
 		//bullets[i]->move(player, obs);
 		//if (bullets[i]->explode(player)){
