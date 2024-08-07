@@ -15,7 +15,7 @@ Texture* rock_tex = nullptr;
 
 void loadRockTexture(SDL_Renderer* renderer) {
 	rock_tex = new Texture();
-	rock_tex->loadFile(renderer, "assets/rock.png");
+	rock_tex->loadSpriteSheet(renderer, "assets/rock.png", 3);
 }
 
 Rock::Rock(int x, int y) {
@@ -25,9 +25,20 @@ Rock::Rock(int x, int y) {
 	hitbox.h = 32;
 }
 
+#define ROCK_ANIMATION_BREAK 0.1
+#define ROCK_ANIMATION_END 0.5
 bool Rock::tick(double deltaTime, std::vector<SDL_Rect*> &obstacles) {
 	if (breakrock) {
-		return true;
+		animationTime += deltaTime;
+		if (animationTime > ROCK_ANIMATION_END) {
+			return true;
+		}else if (animationTime > ROCK_ANIMATION_BREAK) {
+			currSprite = 2;
+		}else if (animationTime > 0) {
+			currSprite = 1;
+		}
+
+		return false;
 	}
 	if (grounded && picked) {
 		return false;
@@ -40,7 +51,7 @@ bool Rock::tick(double deltaTime, std::vector<SDL_Rect*> &obstacles) {
 			if (!grounded) {
 				srand(time(0));
 				grounded = true;
-				return (rand() % 10) > 3;
+				breakrock = (rand() % 10) > 3;
 			}
 		}
 	}
@@ -58,7 +69,7 @@ void Rock::render(SDL_Renderer* render) {
 		loadRockTexture(render);
 	}
 	
-	rock_tex->scaleAndRender(render, &hitbox);
+	rock_tex->scaleAndRenderSprite(render, &hitbox, currSprite);
 #ifdef __DEBUG__
 	test(render);
 #endif
