@@ -1,5 +1,6 @@
 #include "rock.h"
 #include "player.h"
+#include "texture.h"
 #include "utils.h"
 #include <SDL_rect.h>
 #include <SDL_render.h>
@@ -9,6 +10,13 @@
 #include <vector>
 
 #define FALL_SPEED 500
+
+Texture* rock_tex = nullptr;
+
+void loadRockTexture(SDL_Renderer* renderer) {
+	rock_tex = new Texture();
+	rock_tex->loadFile(renderer, "assets/rock.png");
+}
 
 Rock::Rock(int x, int y) {
 	hitbox.x = x;
@@ -46,7 +54,11 @@ bool Rock::tick(double deltaTime, std::vector<SDL_Rect*> &obstacles) {
 }
 
 void Rock::render(SDL_Renderer* render) {
-
+	if (rock_tex == nullptr) {
+		loadRockTexture(render);
+	}
+	
+	rock_tex->scaleAndRender(render, &hitbox);
 #ifdef __DEBUG__
 	test(render);
 #endif
