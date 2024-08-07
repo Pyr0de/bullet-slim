@@ -180,20 +180,22 @@ void Player::eatRock(std::vector<Rock*> &rocks) {
 			}
 
 			if (!tryEat) {
-				break;
+				continue;
 			}
 			if (consumed != nullptr) {
 				consumed->picked = false;
 				consumed->grounded = false;
 				consumed = nullptr;
-				break;
+				tryEat = false;
+				continue;
 			}
 			if (distance(rx, ry, px, py) < 25) {
 				consumed = i;
 				consumed->grounded = true;
-				hitbox.x = rx - hitbox.w/2;
-				hitbox.y = ry - hitbox.h/2;
-				break;
+				consumed->hitbox.x = px - consumed->hitbox.w/2;
+				consumed->hitbox.y = py - consumed->hitbox.h/2;
+				tryEat = false;
+				continue;
 			}
 
 		}
