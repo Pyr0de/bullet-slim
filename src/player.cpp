@@ -21,7 +21,7 @@
 
 Player::Player(SDL_Renderer* render) {
 	texture = Texture();
-	texture.loadFile(render, "assets/slime.png");
+	texture.loadSpriteSheet(render, "assets/slime.png", 2);
 
 	hitbox = {70,70,0,0};
 	velX = 0;
@@ -71,7 +71,7 @@ void Player::render(SDL_Renderer* render) {
 	SDL_Rect health_rect = {HEALTHBAR_X + 27, HEALTHBAR_Y + 10, health * 10, 32};
 	SDL_Rect healthbar = {HEALTHBAR_X, HEALTHBAR_Y, 0, 0};
 
-	texture.render(render, &hitbox, 1);
+	texture.renderSprite(render, &hitbox, 1, consumed ? 1 : 0);
 
 	healthbar_img.renderSprite(render, &healthbar, 1, 1);
 
@@ -174,7 +174,7 @@ void Player::eatRock(std::vector<Rock*> &rocks) {
 			int px = hitbox.x + hitbox.w/2;
 			int py = hitbox.y + hitbox.h/2;
 
-			if (rx-py < 0 && consumed != i && !i->grounded) {
+			if (rx-py < 0 && consumed != i && !i->grounded && !i->breakrock) {
 				changeHealth(-5);
 				i->breakrock = true;
 			}
