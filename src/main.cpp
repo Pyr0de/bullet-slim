@@ -8,7 +8,7 @@
 #include "game.h"
 
 #define SCREEN_WIDTH 1280
-#define SCREEN_HEIGHT 720
+#define SCREEN_HEIGHT 704
 
 
 int main() {
@@ -28,7 +28,7 @@ int main() {
 			SDL_WINDOWPOS_CENTERED, 
 			SDL_WINDOWPOS_CENTERED,
 			SCREEN_WIDTH, SCREEN_HEIGHT,
-			SDL_WINDOW_SHOWN);
+			SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 	if (!window) {
 		printf("Error: Window\n");
 		return 1;
@@ -38,8 +38,9 @@ int main() {
 	if (!renderer) {
 		return 1;
 	}
-	
-	gameStart(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+	SDL_RenderSetLogicalSize(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+	gameStart(window, renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
