@@ -2,7 +2,9 @@
 #include <SDL_events.h>
 #include <SDL_mouse.h>
 #include <SDL_rect.h>
+#include <SDL_render.h>
 #include <SDL_timer.h>
+#include <SDL_video.h>
 #include <cstdio>
 #include <sstream>
 #ifdef __EMSCRIPTEN__
@@ -19,6 +21,7 @@
 
 const int FPS_CAP = 1000 / 60;
 
+SDL_Window* window;
 SDL_Renderer* render;
 int width = 0, height = 0;
 
@@ -68,7 +71,17 @@ void main_loop() {
 		}
 		if (e.type == SDL_MOUSEBUTTONDOWN) {
 			int x = 0, y = 0;
+			int winx, winy;
+
+			SDL_GetWindowSize(window, &winx, &winy);
 			SDL_GetMouseState(&x, &y);
+			
+			float scaleX = (float)winx / width;
+			float scaleY = (float)winy / height;
+
+			x /= scaleX;
+			y /= scaleY;
+
 			if (e.button.button == SDL_BUTTON_LEFT) {
 				bullets.push_back(new Bullet(render, x, y, player));
 			}else if (e.button.button == SDL_BUTTON_RIGHT) {
@@ -105,8 +118,12 @@ void main_loop() {
 	//bullet.move(player);
 
 	//Render
-	SDL_SetRenderDrawColor(render, 45, 41, 53, 255);
+	SDL_SetRenderDrawColor(render, 0, 0, 0, 255);
 	SDL_RenderClear(render);
+
+	SDL_SetRenderDrawColor(render, 45, 41, 53, 255);
+	SDL_Rect bgcolor = {0,0, width, height};
+	SDL_RenderFillRect(render, &bgcolor);
 
 	background.render(render, &background_rect, 1);
 	for (int i = 0; i < rocks.size(); i++) {
@@ -125,7 +142,8 @@ void main_loop() {
 	frames++;
 }
 
-void gameStart(SDL_Renderer *r, int w, int h) {
+void gameStart(SDL_Window* win, SDL_Renderer *r, int w, int h) {
+	window = win;
 	render = r;
 	width = w;
 	height = h;
