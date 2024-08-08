@@ -122,10 +122,9 @@ void main_loop() {
 	SDL_RenderClear(render);
 
 	SDL_SetRenderDrawColor(render, 45, 41, 53, 255);
-	SDL_Rect bgcolor = {0,0, width, height};
-	SDL_RenderFillRect(render, &bgcolor);
+	SDL_RenderFillRect(render, &background_rect);
 
-	background.render(render, &background_rect, 1);
+	background.scaleAndRender(render, &background_rect);
 	for (int i = 0; i < rocks.size(); i++) {
 		rocks[i]->render(render);
 	}
@@ -151,6 +150,8 @@ void gameStart(SDL_Window* win, SDL_Renderer *r, int w, int h) {
 	createObstacles(render, &obs, "assets/level2.map");
 
 	background.loadFile(render, "assets/level2.png");
+	background_rect.w = w;
+	background_rect.h = h;
 
 	player = new Player(render);
 	fps_count = Texture(20);

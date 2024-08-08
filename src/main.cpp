@@ -7,8 +7,8 @@
 
 #include "game.h"
 
-#define SCREEN_WIDTH 1280
-#define SCREEN_HEIGHT 704
+#define SCREEN_WIDTH 1920
+#define SCREEN_HEIGHT 1024
 
 
 int main() {
