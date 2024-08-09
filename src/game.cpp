@@ -147,9 +147,9 @@ void gameStart(SDL_Window* win, SDL_Renderer *r, int w, int h) {
 	width = w;
 	height = h;
 
-	createObstacles(render, &obs, "assets/level2.map");
+	createObstacles(render, &obs, "assets/level3.map");
 
-	background.loadFile(render, "assets/level2.png");
+	background.loadFile(render, "assets/level3.png");
 	background_rect.w = w;
 	background_rect.h = h;
 
