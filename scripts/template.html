@@ -6,13 +6,24 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 
-<body>
+<body style="margin: 0; overflow: hidden;">
 
     <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
 
     <script type='text/javascript'>
         var Module = {
-            canvas: (function() { return document.getElementById('canvas'); })()
+            canvas: (function() { return document.getElementById('canvas'); })(),
+            onRuntimeInitialized: function() {
+                var resizeCanvas = Module.cwrap('resizeCanvas', null, []);
+				function resize() {
+					canvas.width = window.innerWidth;
+					canvas.height = window.innerHeight;
+                    resizeCanvas(canvas.width, canvas.height);
+                }
+
+                window.addEventListener('resize', resize);
+                resize();
+			}
         };
     </script>
     

@@ -167,3 +167,13 @@ void gameStart(SDL_Window* win, SDL_Renderer *r, int w, int h) {
 	}
 #endif
 }
+
+#ifdef __EMSCRIPTEN__
+extern "C" {
+    EMSCRIPTEN_KEEPALIVE
+    void resizeCanvas(int w, int h) {
+		printf("hello%d, %d\n", w, h);
+		SDL_SetWindowSize(window, w, h);
+    }
+}
+#endif
