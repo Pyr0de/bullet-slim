@@ -98,7 +98,7 @@ void main_loop() {
 	}
 
 	fps_text.str("");
-	fps_text << "FPS: " << fps;
+	fps_text << fps;
 	fps_count.loadText(render, fps_text.str().c_str(), white);
 	
 	//Game Tick
@@ -159,7 +159,7 @@ void gameStart(SDL_Window* win, SDL_Renderer *r, int w, int h) {
 	background_rect.h = h;
 
 	player = new Player(render);
-	fps_count = Texture(20);
+	fps_count = Texture(25);
 	laser1 = new Laser(900, 100, 1100, 300, 1);
 	laser2 = new Laser(400, 90, 400, 500, 0);
 #ifdef __EMSCRIPTEN__
