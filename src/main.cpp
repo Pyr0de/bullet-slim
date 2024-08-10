@@ -7,8 +7,8 @@
 
 #include "game.h"
 
-#define SCREEN_WIDTH 1280
-#define SCREEN_HEIGHT 704
+#define SCREEN_WIDTH 1920
+#define SCREEN_HEIGHT 1024
 
 
 int main() {
@@ -28,7 +28,7 @@ int main() {
 			SDL_WINDOWPOS_CENTERED, 
 			SDL_WINDOWPOS_CENTERED,
 			SCREEN_WIDTH, SCREEN_HEIGHT,
-			SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+			SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_OPENGL);
 	if (!window) {
 		printf("Error: Window\n");
 		return 1;

@@ -8,11 +8,17 @@ file(GLOB SOURCES "src/*.cpp")
 if (WASM)
 	message("EMSCRIPTEN")
 	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/wasm)
-	set(CMAKE_CXX_COMPILER "emcc")
+	set(CMAKE_CXX_COMPILER "em++")
+	set(CMAKE_C_COMPILER "emcc")
+
     set(USE_FLAGS "-s USE_SDL=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='[\"png\"]' -s USE_SDL_TTF=2")
+
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${USE_FLAGS}")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${USE_FLAGS}")
+
+	set(USE_FLAGS "${USE_FLAGS} -s EXPORTED_FUNCTIONS='[_resizeCanvas, _main]' -s EXPORTED_RUNTIME_METHODS='[cwrap]'")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${USE_FLAGS} --preload-file assets")
+
     set(CMAKE_EXECUTABLE_SUFFIX .js)
 
 else ()

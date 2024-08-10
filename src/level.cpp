@@ -8,8 +8,8 @@
 #include <vector>
 
 //+1 width for end byte 0xff
-#define LEVEL_WIDTH  21
-#define LEVEL_HEIGHT 11
+#define LEVEL_WIDTH  31
+#define LEVEL_HEIGHT 16
 #define TILE_SIDE 64
 
 const int BYTES_PER_LEVEL = LEVEL_WIDTH * LEVEL_HEIGHT;

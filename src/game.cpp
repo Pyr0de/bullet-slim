@@ -21,9 +21,13 @@
 
 const int FPS_CAP = 1000 / 60;
 
-SDL_Window* window;
+SDL_Window* window = nullptr;
+
 SDL_Renderer* render;
 int width = 0, height = 0;
+#ifdef __EMSCRIPTEN__
+int win_width = 0, win_height = 0;
+#endif
 
 std::vector<SDL_Rect*> obs = {};
 std::vector<Rock*> rocks = {};
@@ -70,6 +74,8 @@ void main_loop() {
 			running = false;
 		}
 		if (e.type == SDL_MOUSEBUTTONDOWN) {
+			//BUG 
+			//coordinates do not account for area outside level when window is in different aspect ratio
 			int x = 0, y = 0;
 			int winx, winy;
 
@@ -93,7 +99,7 @@ void main_loop() {
 	}
 
 	fps_text.str("");
-	fps_text << "FPS: " << fps;
+	fps_text << fps;
 	fps_count.loadText(render, fps_text.str().c_str(), white);
 	
 	//Game Tick
@@ -122,10 +128,10 @@ void main_loop() {
 	SDL_RenderClear(render);
 
 	SDL_SetRenderDrawColor(render, 45, 41, 53, 255);
-	SDL_Rect bgcolor = {0,0, width, height};
-	SDL_RenderFillRect(render, &bgcolor);
+	SDL_RenderFillRect(render, &background_rect);
 
-	background.render(render, &background_rect, 1);
+	background.scaleAndRender(render, &background_rect);
+
 	for (int i = 0; i < rocks.size(); i++) {
 		rocks[i]->render(render);
 	}
@@ -148,15 +154,20 @@ void gameStart(SDL_Window* win, SDL_Renderer *r, int w, int h) {
 	width = w;
 	height = h;
 
-	createObstacles(render, &obs, "assets/level2.map");
+	createObstacles(render, &obs, "assets/level3.map");
 
-	background.loadFile(render, "assets/level2.png");
+	background.loadFile(render, "assets/level3.png");
+	background_rect.w = w;
+	background_rect.h = h;
 
 	player = new Player(render);
-	fps_count = Texture(20);
+	fps_count = Texture(25);
 	laser1 = new Laser(900, 100, 1100, 300, 1);
 	laser2 = new Laser(400, 90, 400, 500, 0);
 #ifdef __EMSCRIPTEN__
+	if (win_width != 0 || win_height != 0) {
+		SDL_SetWindowSize(window, win_width, win_height);
+	}
 	emscripten_set_main_loop(main_loop, 0, 1);
 #endif
 
@@ -166,3 +177,18 @@ void gameStart(SDL_Window* win, SDL_Renderer *r, int w, int h) {
 	}
 #endif
 }
+
+#ifdef __EMSCRIPTEN__
+extern "C" {
+    EMSCRIPTEN_KEEPALIVE
+    void resizeCanvas(int w, int h) {
+		if (window == nullptr) {
+			win_width = w;
+			win_height = h;
+			return;
+		}
+
+		SDL_SetWindowSize(window, w, h);
+    }
+}
+#endif
