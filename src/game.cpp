@@ -22,6 +22,7 @@
 const int FPS_CAP = 1000 / 60;
 
 SDL_Window* window = nullptr;
+
 SDL_Renderer* render;
 int width = 0, height = 0;
 #ifdef __EMSCRIPTEN__
@@ -130,6 +131,7 @@ void main_loop() {
 	SDL_RenderFillRect(render, &background_rect);
 
 	background.scaleAndRender(render, &background_rect);
+
 	for (int i = 0; i < rocks.size(); i++) {
 		rocks[i]->render(render);
 	}
