@@ -73,6 +73,8 @@ void main_loop() {
 			running = false;
 		}
 		if (e.type == SDL_MOUSEBUTTONDOWN) {
+			//BUG 
+			//coordinates do not account for area outside level when window is in different aspect ratio
 			int x = 0, y = 0;
 			int winx, winy;
 
