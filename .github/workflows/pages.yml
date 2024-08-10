@@ -42,11 +42,9 @@ jobs:
         cd build
         emmake make -j $(nproc)
         
-    - name: Archive
+    - name: Setup Archive
       run: |
-        cp scripts/template.html build/wasm/index.html
-        # cd build/wasm
-        # tar -czf wasm-rel.tar.gz *
+        cp web/* build/wasm
         
     - name: Upload
       uses: actions/upload-pages-artifact@v3
