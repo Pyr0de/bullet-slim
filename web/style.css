@@ -1,3 +1,8 @@
+body {
+	margin: 0;
+	overflow: hidden;
+}
+
 button {
 	background: none;
 	border: none;

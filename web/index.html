@@ -7,11 +7,11 @@
 	<link rel="stylesheet" href="style.css">
 </head>
 
-<body style="margin: 0; overflow: hidden;">
-
+<body>
     <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
-
-    <script type='text/javascript'>
+	<button id="up"><img src="button.png"></button>
+    
+	<script type='text/javascript'>
         var Module = {
             canvas: (function() { return document.getElementById('canvas'); })(),
             onRuntimeInitialized: function() {
@@ -27,12 +27,8 @@
 			}
         };
     </script>
-    
-    <script src="bullet-slim.js"></script>
-	<script type="text/javascript">
-
-	</script>
-	<button><img src="button.png"></button>
+    <script src=bullet-slim.js></script>
+	<script src=index.js></script>
 </body>
 
 </html>
