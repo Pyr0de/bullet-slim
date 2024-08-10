@@ -21,9 +21,12 @@
 
 const int FPS_CAP = 1000 / 60;
 
-SDL_Window* window;
+SDL_Window* window = nullptr;
 SDL_Renderer* render;
 int width = 0, height = 0;
+#ifdef __EMSCRIPTEN__
+int win_width = 0, win_height = 0;
+#endif
 
 std::vector<SDL_Rect*> obs = {};
 std::vector<Rock*> rocks = {};
@@ -158,6 +161,9 @@ void gameStart(SDL_Window* win, SDL_Renderer *r, int w, int h) {
 	laser1 = new Laser(900, 100, 1100, 300, 1);
 	laser2 = new Laser(400, 90, 400, 500, 0);
 #ifdef __EMSCRIPTEN__
+	if (win_width != 0 || win_height != 0) {
+		SDL_SetWindowSize(window, win_width, win_height);
+	}
 	emscripten_set_main_loop(main_loop, 0, 1);
 #endif
 
@@ -172,7 +178,12 @@ void gameStart(SDL_Window* win, SDL_Renderer *r, int w, int h) {
 extern "C" {
     EMSCRIPTEN_KEEPALIVE
     void resizeCanvas(int w, int h) {
-		printf("hello%d, %d\n", w, h);
+		if (window == nullptr) {
+			win_width = w;
+			win_height = h;
+			return;
+		}
+
 		SDL_SetWindowSize(window, w, h);
     }
 }
