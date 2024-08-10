@@ -43,6 +43,8 @@ Player* player;
 Boss* boss;
 Catapult *catapult;
 
+int wasm_flags = 0;
+
 Title *title;
 Menu *menu;
 
@@ -146,11 +148,8 @@ void main_loop() {
 	fps_count.loadText(render, fps_text.str().c_str(), {255, 255, 255, 255});
 	
 	//Game Tick
-	
 	if (!paused) {
-
-
-		player->handleInputs();
+		player->handleInputs(wasm_flags);
 		player->eatRock(boss->rocks);
 		player->move(deltaTime, obs);
 
@@ -256,5 +255,18 @@ extern "C" {
 
 		SDL_SetWindowSize(window, w, h);
     }
+
+	//Button index:
+	//1: Left : 0
+	//2: Right : 1
+	//4: Up : 2
+	//8: Interact : 3
+    EMSCRIPTEN_KEEPALIVE
+	void handleControl(int button, bool state) {
+		if (state)
+			wasm_flags |= 1 << button;
+		else
+			wasm_flags &= ~(1 << button);
+	}
 }
 #endif
