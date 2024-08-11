@@ -105,7 +105,7 @@ void main_loop() {
 	//Game Tick
 	player->handleInputs();
 	player->eatRock(rocks);
-	player->move(obs);
+	player->move(deltaTime, obs);
 	for (int i = 0; i < rocks.size(); i++) {
 		if (rocks[i]->tick(deltaTime, obs)) {
 			delete rocks[i];
@@ -113,8 +113,8 @@ void main_loop() {
 		}
 	}
 	for (int i = 0; i < bullets.size(); i++) {
-		bullets[i]->move(player, obs);
-		if (bullets[i]->explode(player)) {
+		bullets[i]->move(deltaTime, player, obs);
+		if (bullets[i]->explode(deltaTime, player)) {
 			delete bullets[i];
 			bullets.erase(bullets.begin() + i);
 		}

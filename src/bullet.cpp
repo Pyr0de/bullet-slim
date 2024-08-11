@@ -12,11 +12,12 @@
 #include <ctime>
 #include <vector>
 
-#define EXPLODE_MS 500
+#define EXPLODE_S 0.5
 #define EXPLODE_RADIUS 100
 #define EXPLODE_DAMAGE -5
-#define ANIMATION_OFFSET 100
-#define KNOCKBACK 25
+#define ANIMATION_OFFSET_S 0.1
+#define KNOCKBACK 1000
+#define BULLET_ACC 800
 
 const int SPEED = 5;
 
@@ -87,7 +88,7 @@ void Bullet::test(SDL_Renderer* render, Player* player) {
 
 	int add = EXPLODE_RADIUS;
 
-	if (explode_start) {
+	if (explodeElapsed) {
 		SDL_SetRenderDrawColor(render, 255,0,0,255);
 		SDL_RenderDrawLine(render, bullet_cx, bullet_cy + add, bullet_cx, bullet_cy - add);
 		SDL_RenderDrawLine(render, bullet_cx + add, bullet_cy, bullet_cx - add, bullet_cy);
@@ -97,7 +98,7 @@ void Bullet::test(SDL_Renderer* render, Player* player) {
 }
 
 void Bullet::render(SDL_Renderer* render) {
-	if (explode_start == 0) {
+	if (explodeElapsed == 0) {
 		bullet->rotate = int(angle * 180/3.14);
 		bullet->render(render, &hitbox, 2);
 	}else {
@@ -112,38 +113,38 @@ void Bullet::render(SDL_Renderer* render) {
 	}
 }
 
-void Bullet::move(Player* player, std::vector<SDL_Rect*> &obstacles){
+void Bullet::move(double deltaTime, Player* player, std::vector<SDL_Rect*> &obstacles){
 	//printf("%f\n", angle);
-	if (explode_start != 0) {
+	if (explodeElapsed != 0) {
 		return;
 	} 
-	// 0.5 acceleration
-	velX += std::cos(angle) * 0.5;
-    velY += std::sin(angle) * 0.5;
 
-	hitbox.x += velX ;
-	hitbox.y += velY ;
+	velX += std::cos(angle) * BULLET_ACC * deltaTime;
+    velY += std::sin(angle) * BULLET_ACC * deltaTime;
+	
+	hitbox.x += velX * deltaTime;
+	hitbox.y += velY * deltaTime;
 
 	if (checkCollision(&hitbox, &player->hitbox))
-		explode_start = SDL_GetTicks64();
+		explodeElapsed = deltaTime;
 	
-	for(int i = 0; i < obstacles.size() && !explode_start; i++) {
+	for(int i = 0; i < obstacles.size() && !explodeElapsed; i++) {
 		if (checkCollision(&hitbox, obstacles[i])) {
-			explode_start = SDL_GetTicks64();
+			explodeElapsed = deltaTime;
 			break;
 		}
 	}
 }
 
-bool Bullet::explode(Player* player) {
-	if (explode_start == 0) {
+bool Bullet::explode(double deltaTime, Player* player) {
+	if (explodeElapsed == 0) {
 		return false;
 	}
-	Uint64 deltaTime = SDL_GetTicks64() - explode_start;
-	if (deltaTime >= EXPLODE_MS) {
+	explodeElapsed += deltaTime;
+	if (explodeElapsed >= EXPLODE_S) {
 		return true;
-	}	
-	alpha = (EXPLODE_MS - deltaTime + ANIMATION_OFFSET) * 255 / EXPLODE_MS;
+	}
+	alpha = (EXPLODE_S - explodeElapsed + ANIMATION_OFFSET_S) * 255 / EXPLODE_S;
 	alpha = alpha > 255 ? 255 : alpha;
 
 	int bullet_cx = hitbox.x + hitbox.w/2;

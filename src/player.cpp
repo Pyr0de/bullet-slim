@@ -9,15 +9,16 @@
 #include "rock.h"
 #include "utils.h"
 
-#define VEL_X 10
-#define VEL_X_SLOW 5
-#define VEL_JUMP -15
+#define VEL_X 400
+#define VEL_X_SLOW 100
+#define VEL_JUMP -650
+#define ACC_GRAVITY 1600
 
 #define HEALTH 20
 #define HEALTHBAR_X 70
 #define HEALTHBAR_Y 10
 
-#define DAMAGE_COOLDOWN 30
+#define DAMAGE_COOLDOWN 0.5
 
 Player::Player(SDL_Renderer* render) {
 	texture = Texture();
@@ -64,9 +65,6 @@ void Player::handleInputs() {
 }
 
 void Player::render(SDL_Renderer* render) {
-	if (damageCooldown) {
-		damageCooldown--;
-	}
 
 	SDL_Rect health_rect = {HEALTHBAR_X + 27, HEALTHBAR_Y + 10, health * 10, 32};
 	SDL_Rect healthbar = {HEALTHBAR_X, HEALTHBAR_Y, 0, 0};
@@ -85,13 +83,11 @@ void Player::render(SDL_Renderer* render) {
 	SDL_RenderDrawRect(render, &hitbox);
 }
 
-void Player::move(std::vector<SDL_Rect*> &obs) {
-
-
-	hitbox.x += velX;
+void Player::move(double deltaTime, std::vector<SDL_Rect*> &obs) {
+	hitbox.x += velX * deltaTime;
 	for (int i = 0; i < obs.size(); i++) {
 		if (checkCollision(&hitbox, obs[i])) {
-			hitbox.x -= velX;
+			hitbox.x -= velX * deltaTime;
 			if (velX > 0) {
 				hitbox.x = obs[i]->x - hitbox.w - 1;
 			}else if (velX < 0) {
@@ -101,16 +97,12 @@ void Player::move(std::vector<SDL_Rect*> &obs) {
 			break;
 		}
 	}
-	if (velX > 0) {
-		velX--;
-	}else if (velX < 0) {
-		velX++;
-	}
+	velX = toZero(velX ,1000 * deltaTime);
 
-	hitbox.y += velY;	
+	hitbox.y += velY * deltaTime;	
 	for (int i = 0; i < obs.size(); i++) {
 		if (checkCollision(&hitbox, obs[i])) {
-			hitbox.y -= velY;
+			hitbox.y -= velY * deltaTime;
 			
 			if (velY > 0) {
 				jumping = false;
@@ -126,10 +118,14 @@ void Player::move(std::vector<SDL_Rect*> &obs) {
 		}
 	}
 	if (jumping){
-		velY+= 1;
+		velY+= ACC_GRAVITY * deltaTime ;
 	}
 	if (velX == 0 && velY == 1) {
 		knockback = false;
+	}
+	
+	if (damageCooldown) {
+		damageCooldown -= deltaTime;
 	}
 	//printf("%d %d\n", velX, velY);
 	if (consumed) {

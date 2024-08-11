@@ -10,6 +10,7 @@
 
 #define LASER_WIDTH 10
 #define LASER_SPEED 100
+#define LASER_KNOCKBACK 300
 
 Texture *laser_tex = nullptr, *laser_tail_tex = nullptr, *laser_head_tex = nullptr;
 
@@ -71,10 +72,10 @@ void Laser::tick(std::vector<SDL_Rect*> &obstacles, Player *player, double delta
 		player->changeHealth(-2);
 		if (morientation) {
 			int a = player->hitbox.x + player->hitbox.w/2 - laser_rect.x + laser_rect.w/2 > 0 ? 1 : -1;
-			player->setKnockback(10 * a, 0);
+			player->setKnockback(LASER_KNOCKBACK * a, 0);
 		}else {
 			int a = player->hitbox.y + player->hitbox.h/2 - laser_rect.y + laser_rect.h/2 > 0 ? 1 : -1;
-			player->setKnockback(0, 10 * a);
+			player->setKnockback(0, LASER_KNOCKBACK * a);
 		}
 	}
 	

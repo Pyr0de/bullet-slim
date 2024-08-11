@@ -16,7 +16,7 @@ class Player {
 	Texture healthbar_img;
 	//SDL_Rect healthbar;
 	int health;
-	int damageCooldown = 0;
+	double damageCooldown = 0;
 
 	bool tryEat = false, eat_down = false;
 	Rock* consumed = nullptr;
@@ -32,7 +32,7 @@ class Player {
 
 	void handleInputs();
 	void render(SDL_Renderer*);
-	void move(std::vector<SDL_Rect*>&);
+	void move(double, std::vector<SDL_Rect*>&);
 
 	void eatRock(std::vector<Rock*> &rocks);
 };
