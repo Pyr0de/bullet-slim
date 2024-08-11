@@ -23,6 +23,12 @@ jobs:
         ./emsdk install latest
         ./emsdk activate latest
         
+    - name: Configure Emscripten Cache
+      uses: actions/cache@v4
+      with:
+        path: emsdk/upstream/emscripten/cache
+        key: emscripten-${{ runner.os }}
+
     - name: Run CMake
       run: |
         source emsdk/emsdk_env.sh
