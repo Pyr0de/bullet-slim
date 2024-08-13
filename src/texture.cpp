@@ -44,9 +44,12 @@ void Texture::loadFile(SDL_Renderer* render, std::string file) {
 			w = surf->w;
 			h = surf->h;
 		}else {
+			printf("Error loading texture: %s\n", file.c_str());
 			SDL_DestroyTexture(texture);
 		}
 
+	}else {
+		printf("Error loading file: %s\n", file.c_str());
 	}
 	
 	SDL_FreeSurface(surf);
