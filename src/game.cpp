@@ -1,4 +1,3 @@
-#include "rock.h"
 #include <SDL_events.h>
 #include <SDL_mouse.h>
 #include <SDL_rect.h>
@@ -11,8 +10,8 @@
 #include <emscripten.h>
 #endif
 
-#include "laser.h"
-#include "moving-guide.h"
+#include "boss.h"
+#include "rock.h"
 #include "bullet.h"
 #include "game.h"
 #include "level.h"
@@ -37,8 +36,7 @@ Texture background = Texture();
 SDL_Rect background_rect = SDL_Rect {0,0,0,0};
 
 Player* player;
-
-Laser *laser1, *laser2;
+Boss* boss;
 
 Texture fps_count;
 SDL_Rect text_box = SDL_Rect {0,0,0,0};
@@ -91,7 +89,8 @@ void main_loop() {
 			if (e.button.button == SDL_BUTTON_LEFT) {
 				bullets.push_back(new Bullet(render, x, y, player));
 			}else if (e.button.button == SDL_BUTTON_RIGHT) {
-				rocks.push_back(new Rock(x, y));
+				//rocks.push_back(new Rock(x, y));
+				boss->startAnimation();
 			}else if (e.button.button == SDL_BUTTON_MIDDLE) {
 				printf("x = %d y = %d\n", x, y);
 			} 
@@ -104,7 +103,7 @@ void main_loop() {
 	
 	//Game Tick
 	player->handleInputs();
-	player->eatRock(rocks);
+	player->eatRock(boss->rocks);
 	player->move(deltaTime, obs);
 	for (int i = 0; i < rocks.size(); i++) {
 		if (rocks[i]->tick(deltaTime, obs)) {
@@ -119,8 +118,7 @@ void main_loop() {
 			bullets.erase(bullets.begin() + i);
 		}
 	}
-	laser1->tick(obs, player, deltaTime);
-	laser2->tick(obs, player, deltaTime);
+	boss->tick(deltaTime, &background_rect, obs);
 	//bullet.move(player);
 
 	//Render
@@ -130,20 +128,21 @@ void main_loop() {
 	SDL_SetRenderDrawColor(render, 45, 41, 53, 255);
 	SDL_RenderFillRect(render, &background_rect);
 
-	background.scaleAndRender(render, &background_rect);
 
+	boss->render(render);
 	for (int i = 0; i < rocks.size(); i++) {
 		rocks[i]->render(render);
 	}
 	for (int i = 0; i < bullets.size(); i++) {
 		bullets[i]->render(render);
 	}
-	laser1->render(render);
-	laser2->render(render);
 	player->render(render);
 
+	background.scaleAndRender(render, &background_rect);
 
 	fps_count.render(render, &text_box, 1);
+	player->renderHud(render);
+
 	SDL_RenderPresent(render);
 	frames++;
 }
@@ -155,15 +154,15 @@ void gameStart(SDL_Window* win, SDL_Renderer *r, int w, int h) {
 	height = h;
 
 	createObstacles(render, &obs, "assets/level3.map");
+	obs.erase(obs.begin());
 
 	background.loadFile(render, "assets/level3.png");
 	background_rect.w = w;
 	background_rect.h = h;
 
 	player = new Player(render);
+	boss = new Boss(width, height);
 	fps_count = Texture(25);
-	laser1 = new Laser(900, 100, 1100, 300, 1);
-	laser2 = new Laser(400, 90, 400, 500, 0);
 #ifdef __EMSCRIPTEN__
 	if (win_width != 0 || win_height != 0) {
 		SDL_SetWindowSize(window, win_width, win_height);

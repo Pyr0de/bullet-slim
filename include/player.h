@@ -32,6 +32,7 @@ class Player {
 
 	void handleInputs();
 	void render(SDL_Renderer*);
+	void renderHud(SDL_Renderer*);
 	void move(double, std::vector<SDL_Rect*>&);
 
 	void eatRock(std::vector<Rock*> &rocks);

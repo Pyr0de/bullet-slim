@@ -65,12 +65,13 @@ void Player::handleInputs() {
 }
 
 void Player::render(SDL_Renderer* render) {
+	texture.renderSprite(render, &hitbox, 1, consumed ? 1 : 0);
+}
 
+void Player::renderHud(SDL_Renderer* render) {
 	SDL_Rect health_rect = {HEALTHBAR_X + 27, HEALTHBAR_Y + 10, health * 10, 32};
 	SDL_Rect healthbar = {HEALTHBAR_X, HEALTHBAR_Y, 0, 0};
-
-	texture.renderSprite(render, &hitbox, 1, consumed ? 1 : 0);
-
+	
 	healthbar_img.renderSprite(render, &healthbar, 1, 1);
 
 	SDL_SetRenderDrawColor(render, 178, 0, 0, 255);
@@ -78,9 +79,6 @@ void Player::render(SDL_Renderer* render) {
 
 	healthbar_img.renderSprite(render, &healthbar, 1, 0);
 
-	return;
-	SDL_SetRenderDrawColor(render, 0,255,255,255);
-	SDL_RenderDrawRect(render, &hitbox);
 }
 
 void Player::move(double deltaTime, std::vector<SDL_Rect*> &obs) {

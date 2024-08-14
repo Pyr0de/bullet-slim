@@ -25,3 +25,10 @@ double distance(double x1, double y1, double x2, double y2) {
 
 	return std::sqrt(a);
 }
+
+float easeOutBack(float progress) {
+	const float c1 = 1.70158;
+	const float c3 = c1 + 1;
+
+	return 1 + c3 * pow(progress-1, 3) + c1 * pow(progress-1, 2);
+}
