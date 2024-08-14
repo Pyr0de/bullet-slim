@@ -125,7 +125,7 @@ void Player::move(double deltaTime, std::vector<SDL_Rect*> &obs) {
 	}
 	
 	if (damageCooldown) {
-		damageCooldown -= deltaTime;
+		damageCooldown = toZero(damageCooldown, deltaTime);
 	}
 	//printf("%d %d\n", velX, velY);
 	if (consumed) {
