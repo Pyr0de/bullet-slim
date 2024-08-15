@@ -71,29 +71,8 @@ void main_loop() {
 		if (e.type == SDL_QUIT) {
 			running = false;
 		}
-		if (e.type == SDL_MOUSEBUTTONDOWN) {
-			//BUG 
-			//coordinates do not account for area outside level when window is in different aspect ratio
-			int x = 0, y = 0;
-			int winx, winy;
-
-			SDL_GetWindowSize(window, &winx, &winy);
-			SDL_GetMouseState(&x, &y);
-			
-			float scaleX = (float)winx / width;
-			float scaleY = (float)winy / height;
-
-			x /= scaleX;
-			y /= scaleY;
-
-			if (e.button.button == SDL_BUTTON_LEFT) {
-				bullets.push_back(new Bullet(render, x, y, player));
-			}else if (e.button.button == SDL_BUTTON_RIGHT) {
-				//rocks.push_back(new Rock(x, y));
-				boss->startAnimation();
-			}else if (e.button.button == SDL_BUTTON_MIDDLE) {
-				printf("x = %d y = %d\n", x, y);
-			} 
+		if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT) {
+			boss->startAnimation();
 		}
 	}
 

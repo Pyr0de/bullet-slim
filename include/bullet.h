@@ -19,7 +19,7 @@ class Bullet {
 	int offset[6];
 
 	public:
-	Bullet(SDL_Renderer* render, int x, int y, Player* player);
+	Bullet(int x, int y, Player* player);
 	void render(SDL_Renderer* render);
 	void move(double deltaTime, Player* player, std::vector<SDL_Rect*> &obstacles);
 	bool explode(double deltaTime, Player* player);
