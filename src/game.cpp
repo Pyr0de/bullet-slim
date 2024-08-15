@@ -97,7 +97,7 @@ void main_loop() {
 			bullets.erase(bullets.begin() + i);
 		}
 	}
-	boss->tick(deltaTime, &background_rect, obs);
+	boss->tick(deltaTime, &background_rect, obs, player);
 	//bullet.move(player);
 
 	//Render
@@ -108,19 +108,14 @@ void main_loop() {
 	SDL_RenderFillRect(render, &background_rect);
 
 
-	boss->render(render);
-	for (int i = 0; i < rocks.size(); i++) {
-		rocks[i]->render(render);
-	}
-	for (int i = 0; i < bullets.size(); i++) {
-		bullets[i]->render(render);
-	}
+	boss->renderbefore(render);
 	player->render(render);
 
 	background.scaleAndRender(render, &background_rect);
 
 	fps_count.render(render, &text_box, 1);
 	player->renderHud(render);
+	boss->renderafter(render);
 
 	SDL_RenderPresent(render);
 	frames++;

@@ -95,12 +95,14 @@ void Laser::tick(std::vector<SDL_Rect*> &obstacles, Player *player, double delta
 	//	*movement_axis += 2 * vel;
 	//}
 }
-void Laser::render(SDL_Renderer* renderer) {
+void Laser::renderbefore(SDL_Renderer* renderer) {
 	if (laser_tex == nullptr) {
 		loadLaserTextures(renderer);
 	}
 	guide.render(renderer);
+}
 
+void Laser::renderafter(SDL_Renderer* renderer) {
 	SDL_Rect laser_tail_tex_rect = {laser_rect.x+laser_rect.w, laser_rect.y + laser_rect.h, 16,16};
 	SDL_Rect laser_head_tex_rect = {laser_rect.x, laser_rect.y, 16,16};
 	if (morientation) {
