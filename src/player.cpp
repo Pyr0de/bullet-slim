@@ -9,9 +9,10 @@
 #include "rock.h"
 #include "utils.h"
 
-#define VEL_X 400
-#define VEL_X_SLOW 100
+#define VEL_X 500
+#define VEL_X_SLOW 200
 #define VEL_JUMP -650
+#define VEL_JUMP_SLOW -450
 #define ACC_GRAVITY 1600
 
 #define HEALTH 20
@@ -46,7 +47,7 @@ void Player::handleInputs() {
 		return;
 	}
 	int vx = consumed ? VEL_X_SLOW : VEL_X;
-	int vy = consumed ? 0 : VEL_JUMP;
+	int vy = consumed ? VEL_JUMP_SLOW : VEL_JUMP;
 
 	if ((keyboardState[SDL_SCANCODE_A] || keyboardState[SDL_SCANCODE_LEFT]) && velX <= 0) {
 		velX = -vx;
