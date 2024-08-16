@@ -21,7 +21,7 @@ void loadLaserTextures(SDL_Renderer* renderer) {
 
 	laser_tex->loadFile(renderer, "assets/laser.png");
 	laser_tail_tex->loadFile(renderer, "assets/laser_end.png");
-	laser_head_tex->loadFile(renderer, "assets/laser_head.png");
+	laser_head_tex->loadSpriteSheet(renderer, "assets/laser_head.png", 2);
 }
 
 Laser::Laser(int x1, int y1, int x2, int y2, bool orientation) {
@@ -119,7 +119,7 @@ void Laser::renderafter(SDL_Renderer* renderer) {
 	laser_tail_tex->setAlpha(a);
 
 	SDL_Rect laser_tail_tex_rect = {laser_rect.x+laser_rect.w, laser_rect.y + laser_rect.h, 16,16};
-	SDL_Rect laser_head_tex_rect = {laser_rect.x, laser_rect.y, 16,16};
+	SDL_Rect laser_head_tex_rect = {laser_rect.x - 16, laser_rect.y, 16,16};
 	if (morientation) {
 		laser_tex->setRotation(90);
 		laser_tail_tex->setRotation(90);
@@ -144,7 +144,7 @@ void Laser::renderafter(SDL_Renderer* renderer) {
 	}
 	laser_tex->scaleAndRender(renderer, &laser_rect);
 	laser_tail_tex->scaleAndRender(renderer, &laser_tail_tex_rect);
-	laser_head_tex->scaleAndRender(renderer, &laser_head_tex_rect);
+	laser_head_tex->scaleAndRenderSprite(renderer, &laser_head_tex_rect, a == 0);
 
 	if (morientation) {
 		int sw = laser_rect.w;
