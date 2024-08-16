@@ -14,11 +14,15 @@ class Laser {
 
 	MovingGuide guide;
 
+	float next_stop = 0;
+	float stop_time = 0;
+	int a = 255;
 	public:
 
 	Laser(int x1, int y1, int x2, int y2, bool orientation);
 
 	void tick(std::vector<SDL_Rect*> &obstacles, Player *player, double deltaTime);
+	bool stopanimation(double deltaTime);
 
 	void renderbefore(SDL_Renderer* renderer);
 	void renderafter(SDL_Renderer* renderer);
