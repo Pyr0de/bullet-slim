@@ -23,7 +23,6 @@ MovingGuide::MovingGuide() {}
 MovingGuide::MovingGuide(int x1, int y1, int x2, int y2, float s) {
 	speed = s;
 	//DDA
-	
 	float dx = x2 - x1;
 	float dy = y2 - y1;
 
@@ -54,11 +53,17 @@ void MovingGuide::tick(double deltaTime_s) {
 	}
 
 	i += deltaTime_s * speed * dir * move;
-	if (i > pX.size() || i < 0) {
-		dir *= -1;
+	if (i > pX.size() - 1) {
+		i = pX.size() - 1;
 		move = false;
-		i += deltaTime_s * speed * dir;
+		dir *= -1;
 	}
+	if (i < 0) {
+		i = 0;
+		move = false;
+		dir *= -1;
+	}
+
 
 }
 
