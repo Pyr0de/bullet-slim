@@ -13,13 +13,20 @@
 
 #define BOSS_ANIMATION_START 2
 Texture* boss_tex = nullptr;
+Texture* boss_health_bar_tex = nullptr;
+Texture* boss_health_tex = nullptr;
 
 int screen_w = 0;
 int screen_h = 0;
 
 void loadBossTextures(SDL_Renderer* render) {
 	boss_tex = new Texture();
+	boss_health_bar_tex = new Texture();
+	boss_health_tex = new Texture();
+
 	boss_tex->loadFile(render, "assets/spider.png");
+	boss_health_bar_tex->loadSpriteSheet(render, "assets/bossbar.png", 2);
+	boss_health_tex->loadSpriteSheet(render, "assets/bosshealth.png", 2);
 }
 
 Boss::Boss(int width, int height) {
@@ -79,10 +86,10 @@ void Boss::tick(double deltaTime, SDL_Rect *background_rect, std::vector<SDL_Rec
 	if (animationTime > 7) {
 		phase1(deltaTime, player);
 	}
-	if (animationTime > 7 && health <= 50) {
+	if (animationTime > 7 && health <= 5) {
 		phase2(deltaTime, background_rect->w);
 	}
-	if (animationTime > 7 && health > 0 && health <= 25) {
+	if (animationTime > 7 && health > 0 && health <= 2.5) {
 		phase3(deltaTime, player);
 	}
 
@@ -90,6 +97,8 @@ void Boss::tick(double deltaTime, SDL_Rect *background_rect, std::vector<SDL_Rec
 }
 
 void Boss::renderbefore(SDL_Renderer* renderer) {
+	if (!animationRunning) {return;}
+
 	if (boss_tex == nullptr) {
 		loadBossTextures(renderer);
 	}
@@ -107,9 +116,25 @@ void Boss::renderbefore(SDL_Renderer* renderer) {
 }
 
 void Boss::renderafter(SDL_Renderer *renderer) {
+	if (!animationRunning) {return;}
+
 	for (Laser *i: lasers) {
 		i->renderafter(renderer);
 	}
+
+	SDL_Rect health_bar = {460, 80, 1000, 30};
+	boss_health_bar_tex->scaleAndRenderSprite(renderer, &health_bar, 1);
+	
+	for (int i = 0; i < health; i++) {
+		health_bar.w = 100;
+		boss_health_tex->setFlip(i == 9 ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+		boss_health_tex->scaleAndRenderSprite(renderer, &health_bar, i != 0 && i != 9);
+		health_bar.x += 100;
+	}
+	health_bar.w = 1000;
+	health_bar.x -= 100 * int(health);	
+	boss_health_bar_tex->scaleAndRenderSprite(renderer, &health_bar, 0);
+
 #ifdef __DEBUG__
 	test(renderer);
 #endif
@@ -135,8 +160,8 @@ bool Boss::phase1(double deltaTime, Player* player) {
 bool phase2_laser_created = false;
 bool Boss::phase2(double deltaTime, int width) {
 	if (!phase2_laser_created) {
-		lasers.push_back(new Laser(100, 100, width - 100, 100 ,1));
-		lasers.push_back(new Laser(width - 100, 100, 100, 100 ,1));
+		lasers.push_back(new Laser(150, 150, width - 100, 150 ,1));
+		lasers.push_back(new Laser(width - 100, 150, 150, 150 ,1));
 		phase2_laser_created = true;
 	}
 	return false;

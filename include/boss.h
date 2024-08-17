@@ -12,7 +12,7 @@ class Boss{
 	double animationTime = 0;
 	bool animationRunning = false;
 
-	int health = 50;
+	float health = 10;
 
 	public:
 	std::vector<Rock*> rocks = {};
