@@ -11,8 +11,6 @@
 #endif
 
 #include "boss.h"
-#include "rock.h"
-#include "bullet.h"
 #include "game.h"
 #include "level.h"
 #include "player.h"
@@ -29,8 +27,6 @@ int win_width = 0, win_height = 0;
 #endif
 
 std::vector<SDL_Rect*> obs = {};
-std::vector<Rock*> rocks = {};
-std::vector<Bullet*> bullets = {};
 
 Texture background = Texture();
 SDL_Rect background_rect = SDL_Rect {0,0,0,0};
@@ -57,6 +53,9 @@ void main_loop() {
 	now = SDL_GetPerformanceCounter();
 	double deltaTime =((now - last) / (double)SDL_GetPerformanceFrequency());
 
+	if(deltaTime >= 1) {
+		return;
+	} 
 	//FPS
 	if (frames > 30) {
 		fps = frames / ((SDL_GetTicks64() - start) / 1000.f);
@@ -84,21 +83,7 @@ void main_loop() {
 	player->handleInputs();
 	player->eatRock(boss->rocks);
 	player->move(deltaTime, obs);
-	for (int i = 0; i < rocks.size(); i++) {
-		if (rocks[i]->tick(deltaTime, obs)) {
-			delete rocks[i];
-			rocks.erase(rocks.begin() + i);
-		}
-	}
-	for (int i = 0; i < bullets.size(); i++) {
-		bullets[i]->move(deltaTime, player, obs);
-		if (bullets[i]->explode(deltaTime, player)) {
-			delete bullets[i];
-			bullets.erase(bullets.begin() + i);
-		}
-	}
 	boss->tick(deltaTime, &background_rect, obs, player);
-	//bullet.move(player);
 
 	//Render
 	SDL_SetRenderDrawColor(render, 0, 0, 0, 255);
@@ -106,7 +91,6 @@ void main_loop() {
 
 	SDL_SetRenderDrawColor(render, 45, 41, 53, 255);
 	SDL_RenderFillRect(render, &background_rect);
-
 
 	boss->renderbefore(render);
 	player->render(render);
