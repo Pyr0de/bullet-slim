@@ -80,7 +80,11 @@ void Boss::tick(double deltaTime, SDL_Rect *background_rect, std::vector<SDL_Rec
 	if (animationTime > 0 && animationTime < 4) {
 		hitbox.y =750 * easeOutBack(animationTime / 4) - hitbox.h;
 	}
+	if (animationTime > 1 && animationTime < 4) 
+		health_bar_op = 255 * (animationTime - 1) / 3;
+
 	if (animationTime > 4.5 && animationTime < 6.5) {
+		health_bar_op = 255;
 		rocks_fall_time = 0;
 	}
 	if (animationTime > 7) {
@@ -121,6 +125,8 @@ void Boss::renderafter(SDL_Renderer *renderer) {
 	for (Laser *i: lasers) {
 		i->renderafter(renderer);
 	}
+	boss_health_tex->setAlpha(health_bar_op);
+	boss_health_bar_tex->setAlpha(health_bar_op);
 
 	SDL_Rect health_bar = {460, 80, 1000, 30};
 	boss_health_bar_tex->scaleAndRenderSprite(renderer, &health_bar, 1);
