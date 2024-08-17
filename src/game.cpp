@@ -1,3 +1,4 @@
+#include "catapult.h"
 #include <SDL_events.h>
 #include <SDL_mouse.h>
 #include <SDL_rect.h>
@@ -33,6 +34,7 @@ SDL_Rect background_rect = SDL_Rect {0,0,0,0};
 
 Player* player;
 Boss* boss;
+Catapult *catapult;
 
 Texture fps_count;
 SDL_Rect text_box = SDL_Rect {0,0,0,0};
@@ -84,6 +86,7 @@ void main_loop() {
 	player->eatRock(boss->rocks);
 	player->move(deltaTime, obs);
 	boss->tick(deltaTime, &background_rect, obs, player);
+	catapult->tick(deltaTime);
 
 	//Render
 	SDL_SetRenderDrawColor(render, 0, 0, 0, 255);
@@ -94,6 +97,7 @@ void main_loop() {
 
 	boss->renderbefore(render);
 	player->render(render);
+	catapult->render(render);
 
 	background.scaleAndRender(render, &background_rect);
 
@@ -120,6 +124,8 @@ void gameStart(SDL_Window* win, SDL_Renderer *r, int w, int h) {
 
 	player = new Player(render);
 	boss = new Boss(width, height);
+	catapult = new Catapult(65, height - 64*3);
+	obs.push_back(&catapult->hitbox);
 	fps_count = Texture(25);
 #ifdef __EMSCRIPTEN__
 	if (win_width != 0 || win_height != 0) {
