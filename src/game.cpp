@@ -86,7 +86,7 @@ void main_loop() {
 	player->eatRock(boss->rocks);
 	player->move(deltaTime, obs);
 	boss->tick(deltaTime, &background_rect, obs, player);
-	catapult->tick(deltaTime);
+	catapult->tick(deltaTime, player);
 
 	//Render
 	SDL_SetRenderDrawColor(render, 0, 0, 0, 255);
@@ -97,11 +97,12 @@ void main_loop() {
 
 	boss->renderbefore(render);
 	player->render(render);
-	catapult->render(render);
+	catapult->renderbefore(render);
 
 	background.scaleAndRender(render, &background_rect);
 
 	fps_count.render(render, &text_box, 1);
+	catapult->renderafter(render);
 	player->renderHud(render);
 	boss->renderafter(render);
 
@@ -124,7 +125,7 @@ void gameStart(SDL_Window* win, SDL_Renderer *r, int w, int h) {
 
 	player = new Player(render);
 	boss = new Boss(width, height);
-	catapult = new Catapult(65, height - 64*3);
+	catapult = new Catapult(200, height - 64*3);
 	obs.push_back(&catapult->hitbox);
 	fps_count = Texture(25);
 #ifdef __EMSCRIPTEN__
