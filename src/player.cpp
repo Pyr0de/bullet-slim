@@ -40,8 +40,8 @@ Player::Player(SDL_Renderer* render) {
 void Player::handleInputs() {
 	auto *keyboardState = SDL_GetKeyboardState(nullptr);
 	
-	tryEat = keyboardState[SDL_SCANCODE_E] && !eat_down;
-	eat_down = keyboardState[SDL_SCANCODE_E];
+	tryEat = keyboardState[SDL_SCANCODE_E] && !interact;
+	interact = keyboardState[SDL_SCANCODE_E];
 
 	if (knockback) {
 		return;

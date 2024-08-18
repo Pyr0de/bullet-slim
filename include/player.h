@@ -18,10 +18,11 @@ class Player {
 	int health;
 	double damageCooldown = 0;
 
-	bool tryEat = false, eat_down = false;
+	bool tryEat = false;
 	Rock* consumed = nullptr;
 
 	public:
+	bool interact = false;
 	int velX, velY;
 	SDL_Rect hitbox;
 
