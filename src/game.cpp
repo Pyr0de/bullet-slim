@@ -86,7 +86,7 @@ void main_loop() {
 	player->eatRock(boss->rocks);
 	player->move(deltaTime, obs);
 	boss->tick(deltaTime, &background_rect, obs, player);
-	catapult->tick(deltaTime, player);
+	catapult->tick(deltaTime, player, boss->rocks);
 
 	//Render
 	SDL_SetRenderDrawColor(render, 0, 0, 0, 255);
