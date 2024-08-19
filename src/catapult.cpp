@@ -5,6 +5,7 @@
 #include <SDL_render.h>
 #include <cmath>
 #include <cstdio>
+#include <vector>
 
 Texture *catapult_head_tex = nullptr;
 Texture *catapult_body_tex = nullptr;
@@ -31,19 +32,36 @@ Catapult::Catapult(int x, int y) {
 	activatebox.y = renderbox.y + renderbox.h - activatebox.h;
 }
 
-void Catapult::tick(double deltaTime, Player *player) {
+void Catapult::tick(double deltaTime, Player *player, std::vector<Rock*> &rocks) {
 	if (checkCollision(&activatebox, &player->hitbox) && player->interact) {
 		if (!reloaded) {
 			if (progress < 100) 
-				progress += deltaTime / 3 * 100;
+				progress += deltaTime / 2 * 100;
 			else {
 				reloaded = true;
 				activatebox.x = hitbox.x + hitbox.w;
 			}
 		}else {
+			if (loadedRock != nullptr) {
+				loadedRock->toRender = true;
+				loadedRock->velY = -650;
+				loadedRock->velX = 500;
+				loadedRock->grounded = false;
+				loadedRock->hitbox.x = renderbox.x + renderbox.w - hitbox.w/2;
+				loadedRock->hitbox.y = renderbox.y - hitbox.h/2;
+				loadedRock = nullptr;
+			}
 			progress = 0;
 			reloaded = false;
 			activatebox.x = hitbox.x - activatebox.w;
+		}
+	}
+
+	for (Rock *i: rocks) {
+		if (checkCollision(&i->hitbox, &hitbox) && loadedRock == nullptr && progress >= 100) {
+			loadedRock = i;
+			i->toRender = false;
+			break;
 		}
 	}
 }
@@ -57,21 +75,31 @@ void Catapult::renderbefore(SDL_Renderer *renderer) {
 		renderbox.w/64 * 60, renderbox.h/64 * 13
 	};
 	catapult_head_tex->anchor = {37 * renderbox.w/64, 9 * renderbox.h/64};
-	catapult_head_tex->rotate = 120 * std::pow(1 - progress/100, 2);
-	catapult_head_tex->scaleAndRenderSprite(renderer, &head_render_box, 1);
+	catapult_head_tex->rotate = 120 * (1 - easeOutBack(progress/100));
+	catapult_head_tex->scaleAndRenderSprite(renderer, &head_render_box, loadedRock != nullptr);
 	catapult_body_tex->scaleAndRender(renderer, &renderbox);
 }
 
 void Catapult::renderafter(SDL_Renderer *renderer) {
+	int alpha = 0;
+	if (progress <= 10) {
+		alpha = 255 * progress/10;
+	}else if (progress >= 100){
+		alpha = 0;
+	}else {
+		alpha = 255;
+	}
+	catapult_bar_tex->setAlpha(alpha);
 	SDL_Rect catapult_bar_rect = {renderbox.x, renderbox.y, 60 ,10};
+	
 	catapult_bar_rect.x += renderbox.w/2 - catapult_bar_rect.w/2;
 	catapult_bar_tex->scaleAndRenderSprite(renderer, &catapult_bar_rect, 1);
 	
 	int w = catapult_bar_rect.w;
 	catapult_bar_rect.x += w/30;
-	catapult_bar_rect.w = 56 * progress/100;
+	catapult_bar_rect.w = progress >= 100 ? 0: 56 * progress/100;
 
-	SDL_SetRenderDrawColor(renderer, 255,255,255,255);
+	SDL_SetRenderDrawColor(renderer, 255,255,255, 255);
 	SDL_RenderFillRect(renderer, &catapult_bar_rect);
 	
 	catapult_bar_rect.w = w;
