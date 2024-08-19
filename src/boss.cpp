@@ -164,7 +164,7 @@ void Boss::test(SDL_Renderer* renderer) {
 
 double phase1interval = 0;
 bool Boss::phase1(double deltaTime, Player* player) {
-	if (phase1interval > 1) {
+	if (phase1interval > 1.5) {
 		int x = 64 + rand() % (screen_w - 64 * 3);
 		int y = 64 + rand() % 40;
 		bullets.push_back(new Bullet(x, y, player));
@@ -177,8 +177,8 @@ bool Boss::phase1(double deltaTime, Player* player) {
 bool phase2_laser_created = false;
 bool Boss::phase2(double deltaTime, int width) {
 	if (!phase2_laser_created) {
-		lasers.push_back(new Laser(150, 150, width - 100, 150 ,1));
-		lasers.push_back(new Laser(width - 100, 150, 150, 150 ,1));
+		lasers.push_back(new Laser(150, 150, width - 150, 150 ,1));
+		lasers.push_back(new Laser(width - 150, 150, 150, 150 ,1));
 		phase2_laser_created = true;
 	}
 	return false;

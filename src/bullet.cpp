@@ -13,11 +13,11 @@
 #include <vector>
 
 #define EXPLODE_S 0.5
-#define EXPLODE_RADIUS 100
+#define EXPLODE_RADIUS 75
 #define EXPLODE_DAMAGE -5
 #define ANIMATION_OFFSET_S 0.1
-#define KNOCKBACK 1000
-#define BULLET_ACC 800
+#define KNOCKBACK 500
+#define BULLET_ACC 500
 
 const int SPEED = 5;
 
