@@ -119,7 +119,7 @@ void Laser::renderafter(SDL_Renderer* renderer) {
 	laser_tail_tex->setAlpha(a);
 
 	SDL_Rect laser_tail_tex_rect = {laser_rect.x+laser_rect.w, laser_rect.y + laser_rect.h, 16,16};
-	SDL_Rect laser_head_tex_rect = {laser_rect.x - 16, laser_rect.y, 16,16};
+	SDL_Rect laser_head_tex_rect = {laser_rect.x, laser_rect.y, 16,16};
 	if (morientation) {
 		laser_tex->setRotation(90);
 		laser_tail_tex->setRotation(90);
