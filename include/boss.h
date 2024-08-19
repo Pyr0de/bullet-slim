@@ -9,10 +9,11 @@
 #include <vector>
 class Boss{
 	SDL_Rect hitbox = {0,0,512,512};
+	SDL_Rect mainbody = {0,0,0,0};
 	double animationTime = 0;
 	bool animationRunning = false;
 
-	float health = 10;
+	float health = 4;
 	int health_bar_op = 0;
 
 	public:

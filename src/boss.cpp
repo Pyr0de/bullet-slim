@@ -37,13 +37,21 @@ Boss::Boss(int width, int height) {
 	hitbox.y = -hitbox.h;
 	srand(time(0));
 	
+	mainbody.w = hitbox.w/128 * 52;
+	mainbody.h = hitbox.h/128 * 91;
+
 }
 
 double rocks_fall_time = 10000;
 double ground_shake_animation = 0;
 void Boss::tick(double deltaTime, SDL_Rect *background_rect, std::vector<SDL_Rect*> &obstacles,
 		Player* player) {
+
 	for (int i = 0; i < rocks.size(); i++) {
+		if (checkCollision(&rocks[i]->hitbox, &mainbody)) {
+			health -= 1 * !rocks[i]->breakrock;
+			rocks[i]->breakrock = true;
+		}
 		if (rocks[i]->tick(deltaTime, obstacles)) {
 			delete rocks[i];
 			rocks.erase(rocks.begin() + i);
@@ -98,13 +106,16 @@ void Boss::tick(double deltaTime, SDL_Rect *background_rect, std::vector<SDL_Rec
 		phase3(deltaTime, player);
 	}
 
-
+	mainbody.x = hitbox.x + hitbox.w/128 * 38;
+	mainbody.y = hitbox.y + hitbox.h/128 * 25;
 }
 
 void Boss::renderbefore(SDL_Renderer* renderer) {
 	if (boss_tex == nullptr) {
 		loadBossTextures(renderer);
 	}
+	if (animationRunning)
+		boss_tex->scaleAndRender(renderer, &hitbox);
 
 	for (Rock *i: rocks) {
 		i->render(renderer);
@@ -115,8 +126,6 @@ void Boss::renderbefore(SDL_Renderer* renderer) {
 	for (Laser *i: lasers) {
 		i->renderbefore(renderer);
 	}
-	if (!animationRunning) {return;}
-	boss_tex->scaleAndRender(renderer, &hitbox);
 }
 
 void Boss::renderafter(SDL_Renderer *renderer) {
@@ -149,6 +158,8 @@ void Boss::renderafter(SDL_Renderer *renderer) {
 void Boss::test(SDL_Renderer* renderer) {
 	SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
 	SDL_RenderDrawRect(renderer, &hitbox);
+	SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+	SDL_RenderDrawRect(renderer, &mainbody);
 }
 
 double phase1interval = 0;
@@ -180,7 +191,8 @@ bool Boss::phase3(double deltaTime, Player *player) {
 bool Boss::groundShake(double time, SDL_Rect *background_rect) {
 	if (time == 0) {
 		for (int i = 0; i < 2; i++) {
-			int x = 64 + rand() % (background_rect->w - 64 * 2);
+			int x = 64 + rand() % (background_rect->w - 64 * 2 - hitbox.w);
+			x += x > hitbox.x ? hitbox.w : 0;
 			int y = -rand() % 40;
 			rocks.push_back(new Rock(x, y));
 		}
