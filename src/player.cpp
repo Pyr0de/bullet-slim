@@ -9,9 +9,10 @@
 #include "rock.h"
 #include "utils.h"
 
-#define VEL_X 400
-#define VEL_X_SLOW 100
+#define VEL_X 500
+#define VEL_X_SLOW 200
 #define VEL_JUMP -650
+#define VEL_JUMP_SLOW -450
 #define ACC_GRAVITY 1600
 
 #define HEALTH 20
@@ -39,14 +40,14 @@ Player::Player(SDL_Renderer* render) {
 void Player::handleInputs() {
 	auto *keyboardState = SDL_GetKeyboardState(nullptr);
 	
-	tryEat = keyboardState[SDL_SCANCODE_E] && !eat_down;
-	eat_down = keyboardState[SDL_SCANCODE_E];
+	tryEat = keyboardState[SDL_SCANCODE_E] && !interact;
+	interact = keyboardState[SDL_SCANCODE_E];
 
 	if (knockback) {
 		return;
 	}
 	int vx = consumed ? VEL_X_SLOW : VEL_X;
-	int vy = consumed ? 0 : VEL_JUMP;
+	int vy = consumed ? VEL_JUMP_SLOW : VEL_JUMP;
 
 	if ((keyboardState[SDL_SCANCODE_A] || keyboardState[SDL_SCANCODE_LEFT]) && velX <= 0) {
 		velX = -vx;
@@ -65,12 +66,13 @@ void Player::handleInputs() {
 }
 
 void Player::render(SDL_Renderer* render) {
+	texture.renderSprite(render, &hitbox, 1, consumed ? 1 : 0);
+}
 
+void Player::renderHud(SDL_Renderer* render) {
 	SDL_Rect health_rect = {HEALTHBAR_X + 27, HEALTHBAR_Y + 10, health * 10, 32};
 	SDL_Rect healthbar = {HEALTHBAR_X, HEALTHBAR_Y, 0, 0};
-
-	texture.renderSprite(render, &hitbox, 1, consumed ? 1 : 0);
-
+	
 	healthbar_img.renderSprite(render, &healthbar, 1, 1);
 
 	SDL_SetRenderDrawColor(render, 178, 0, 0, 255);
@@ -78,9 +80,6 @@ void Player::render(SDL_Renderer* render) {
 
 	healthbar_img.renderSprite(render, &healthbar, 1, 0);
 
-	return;
-	SDL_SetRenderDrawColor(render, 0,255,255,255);
-	SDL_RenderDrawRect(render, &hitbox);
 }
 
 void Player::move(double deltaTime, std::vector<SDL_Rect*> &obs) {
@@ -185,7 +184,7 @@ void Player::eatRock(std::vector<Rock*> &rocks) {
 				tryEat = false;
 				continue;
 			}
-			if (distance(rx, ry, px, py) < 25) {
+			if (distance(rx, ry, px, py) < 25 && i->toRender) {
 				consumed = i;
 				consumed->grounded = true;
 				consumed->hitbox.x = px - consumed->hitbox.w/2;

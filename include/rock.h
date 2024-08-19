@@ -8,7 +8,8 @@ class Rock {
 	int currSprite = 0;
 	
 	public:
-	double velY = 0;
+	bool toRender = true;
+	double velY = 0, velX = 0;
 	bool grounded = false, breakrock = false;
 	bool picked = false;
 	SDL_Rect hitbox = {0,0,0,0};

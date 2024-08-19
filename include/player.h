@@ -18,10 +18,11 @@ class Player {
 	int health;
 	double damageCooldown = 0;
 
-	bool tryEat = false, eat_down = false;
+	bool tryEat = false;
 	Rock* consumed = nullptr;
 
 	public:
+	bool interact = false;
 	int velX, velY;
 	SDL_Rect hitbox;
 
@@ -32,6 +33,7 @@ class Player {
 
 	void handleInputs();
 	void render(SDL_Renderer*);
+	void renderHud(SDL_Renderer*);
 	void move(double, std::vector<SDL_Rect*>&);
 
 	void eatRock(std::vector<Rock*> &rocks);

@@ -13,18 +13,18 @@
 #include <vector>
 
 #define EXPLODE_S 0.5
-#define EXPLODE_RADIUS 100
+#define EXPLODE_RADIUS 75
 #define EXPLODE_DAMAGE -5
 #define ANIMATION_OFFSET_S 0.1
-#define KNOCKBACK 1000
-#define BULLET_ACC 800
+#define KNOCKBACK 500
+#define BULLET_ACC 500
 
 const int SPEED = 5;
 
 Texture* bullet = nullptr;
 Texture* explosion[3];
 
-void loadTextures(SDL_Renderer* render) {
+void loadBulletTextures(SDL_Renderer* render) {
 	bullet = new Texture();
 	bullet->loadFile(render, "assets/bullet.png");
 
@@ -47,11 +47,7 @@ void loadTextures(SDL_Renderer* render) {
 	}
 }
 
-Bullet::Bullet(SDL_Renderer* render, int x, int y, Player* player) {
-	if (bullet == nullptr) {
-		loadTextures(render);
-	}
-
+Bullet::Bullet(int x, int y, Player* player) {
 	hitbox.x = x;
 	hitbox.y = y;	
 
@@ -98,6 +94,9 @@ void Bullet::test(SDL_Renderer* render, Player* player) {
 }
 
 void Bullet::render(SDL_Renderer* render) {
+	if (bullet == nullptr) {
+		loadBulletTextures(render);
+	}
 	if (explodeElapsed == 0) {
 		bullet->rotate = int(angle * 180/3.14);
 		bullet->render(render, &hitbox, 2);

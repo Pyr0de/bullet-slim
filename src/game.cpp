@@ -1,4 +1,4 @@
-#include "rock.h"
+#include "catapult.h"
 #include <SDL_events.h>
 #include <SDL_mouse.h>
 #include <SDL_rect.h>
@@ -11,9 +11,7 @@
 #include <emscripten.h>
 #endif
 
-#include "laser.h"
-#include "moving-guide.h"
-#include "bullet.h"
+#include "boss.h"
 #include "game.h"
 #include "level.h"
 #include "player.h"
@@ -30,15 +28,13 @@ int win_width = 0, win_height = 0;
 #endif
 
 std::vector<SDL_Rect*> obs = {};
-std::vector<Rock*> rocks = {};
-std::vector<Bullet*> bullets = {};
 
 Texture background = Texture();
 SDL_Rect background_rect = SDL_Rect {0,0,0,0};
 
 Player* player;
-
-Laser *laser1, *laser2;
+Boss* boss;
+Catapult *catapult;
 
 Texture fps_count;
 SDL_Rect text_box = SDL_Rect {0,0,0,0};
@@ -59,6 +55,9 @@ void main_loop() {
 	now = SDL_GetPerformanceCounter();
 	double deltaTime =((now - last) / (double)SDL_GetPerformanceFrequency());
 
+	if(deltaTime >= 1) {
+		return;
+	} 
 	//FPS
 	if (frames > 30) {
 		fps = frames / ((SDL_GetTicks64() - start) / 1000.f);
@@ -73,28 +72,8 @@ void main_loop() {
 		if (e.type == SDL_QUIT) {
 			running = false;
 		}
-		if (e.type == SDL_MOUSEBUTTONDOWN) {
-			//BUG 
-			//coordinates do not account for area outside level when window is in different aspect ratio
-			int x = 0, y = 0;
-			int winx, winy;
-
-			SDL_GetWindowSize(window, &winx, &winy);
-			SDL_GetMouseState(&x, &y);
-			
-			float scaleX = (float)winx / width;
-			float scaleY = (float)winy / height;
-
-			x /= scaleX;
-			y /= scaleY;
-
-			if (e.button.button == SDL_BUTTON_LEFT) {
-				bullets.push_back(new Bullet(render, x, y, player));
-			}else if (e.button.button == SDL_BUTTON_RIGHT) {
-				rocks.push_back(new Rock(x, y));
-			}else if (e.button.button == SDL_BUTTON_MIDDLE) {
-				printf("x = %d y = %d\n", x, y);
-			} 
+		if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT) {
+			boss->startAnimation();
 		}
 	}
 
@@ -104,24 +83,10 @@ void main_loop() {
 	
 	//Game Tick
 	player->handleInputs();
-	player->eatRock(rocks);
+	player->eatRock(boss->rocks);
 	player->move(deltaTime, obs);
-	for (int i = 0; i < rocks.size(); i++) {
-		if (rocks[i]->tick(deltaTime, obs)) {
-			delete rocks[i];
-			rocks.erase(rocks.begin() + i);
-		}
-	}
-	for (int i = 0; i < bullets.size(); i++) {
-		bullets[i]->move(deltaTime, player, obs);
-		if (bullets[i]->explode(deltaTime, player)) {
-			delete bullets[i];
-			bullets.erase(bullets.begin() + i);
-		}
-	}
-	laser1->tick(obs, player, deltaTime);
-	laser2->tick(obs, player, deltaTime);
-	//bullet.move(player);
+	boss->tick(deltaTime, &background_rect, obs, player);
+	catapult->tick(deltaTime, player, boss->rocks);
 
 	//Render
 	SDL_SetRenderDrawColor(render, 0, 0, 0, 255);
@@ -130,20 +95,17 @@ void main_loop() {
 	SDL_SetRenderDrawColor(render, 45, 41, 53, 255);
 	SDL_RenderFillRect(render, &background_rect);
 
+	boss->renderbefore(render);
+	player->render(render);
+	catapult->renderbefore(render);
+
 	background.scaleAndRender(render, &background_rect);
 
-	for (int i = 0; i < rocks.size(); i++) {
-		rocks[i]->render(render);
-	}
-	for (int i = 0; i < bullets.size(); i++) {
-		bullets[i]->render(render);
-	}
-	laser1->render(render);
-	laser2->render(render);
-	player->render(render);
-
-
 	fps_count.render(render, &text_box, 1);
+	catapult->renderafter(render);
+	player->renderHud(render);
+	boss->renderafter(render);
+
 	SDL_RenderPresent(render);
 	frames++;
 }
@@ -155,15 +117,17 @@ void gameStart(SDL_Window* win, SDL_Renderer *r, int w, int h) {
 	height = h;
 
 	createObstacles(render, &obs, "assets/level3.map");
+	obs.erase(obs.begin());
 
 	background.loadFile(render, "assets/level3.png");
 	background_rect.w = w;
 	background_rect.h = h;
 
 	player = new Player(render);
+	boss = new Boss(width, height);
+	catapult = new Catapult(200, height - 64*3);
+	obs.push_back(&catapult->hitbox);
 	fps_count = Texture(25);
-	laser1 = new Laser(900, 100, 1100, 300, 1);
-	laser2 = new Laser(400, 90, 400, 500, 0);
 #ifdef __EMSCRIPTEN__
 	if (win_width != 0 || win_height != 0) {
 		SDL_SetWindowSize(window, win_width, win_height);

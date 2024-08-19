@@ -44,9 +44,12 @@ void Texture::loadFile(SDL_Renderer* render, std::string file) {
 			w = surf->w;
 			h = surf->h;
 		}else {
+			printf("Error loading texture: %s\n", file.c_str());
 			SDL_DestroyTexture(texture);
 		}
 
+	}else {
+		printf("Error loading file: %s\n", file.c_str());
 	}
 	
 	SDL_FreeSurface(surf);
@@ -118,7 +121,7 @@ void Texture::scaleAndRenderSprite(SDL_Renderer* render, SDL_Rect* rect, int ind
 	}	
 	SDL_Rect src = {0, h * index / numberOfSprites, w, h / numberOfSprites};
 
-	SDL_RenderCopyEx(render, texture, &src, rect, rotate, nullptr, flip);
+	SDL_RenderCopyEx(render, texture, &src, rect, rotate, &anchor, flip);
 }
 
 void Texture::setRotation(int angle){

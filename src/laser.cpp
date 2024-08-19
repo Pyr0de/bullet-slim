@@ -21,7 +21,7 @@ void loadLaserTextures(SDL_Renderer* renderer) {
 
 	laser_tex->loadFile(renderer, "assets/laser.png");
 	laser_tail_tex->loadFile(renderer, "assets/laser_end.png");
-	laser_head_tex->loadFile(renderer, "assets/laser_head.png");
+	laser_head_tex->loadSpriteSheet(renderer, "assets/laser_head.png", 2);
 }
 
 Laser::Laser(int x1, int y1, int x2, int y2, bool orientation) {
@@ -36,10 +36,22 @@ Laser::Laser(int x1, int y1, int x2, int y2, bool orientation) {
 	}
 
 	morientation = orientation;
+	next_stop = 10 + rand() % 10;
 }
 
 void Laser::tick(std::vector<SDL_Rect*> &obstacles, Player *player, double deltaTime) {
-	
+	if (next_stop < 0) {
+		if (stopanimation(deltaTime)) {
+			next_stop = 10 + rand() % 10;
+			stop_time = 0;
+		}else {
+			stop_time += deltaTime;
+		}
+
+		return;
+	}
+	next_stop -= deltaTime;
+
 	guide.tick(deltaTime);
 	guide.getCoords(laser_rect.x, laser_rect.y);
 	laser_rect.x -= LASER_WIDTH/2;
@@ -78,28 +90,33 @@ void Laser::tick(std::vector<SDL_Rect*> &obstacles, Player *player, double delta
 			player->setKnockback(0, LASER_KNOCKBACK * a);
 		}
 	}
-	
-
-
-	//if (p1 == p2) {
-	//	return;
-	//}
-	//int* movement_axis = &laser_rect.y;
-	//if (morientation) {
-	//	movement_axis = &laser_rect.x;
-	//}
-	//*movement_axis += vel;
-
-	//if ((*movement_axis > p1 && *movement_axis > p2) || (*movement_axis < p1 && *movement_axis < p2)) {
-	//	vel *= -1;
-	//	*movement_axis += 2 * vel;
-	//}
 }
-void Laser::render(SDL_Renderer* renderer) {
+
+bool Laser::stopanimation(double deltaTime) {
+	if (stop_time >= 0 && stop_time < 1.5) {
+		a = 255 - 155 * easeInBounce(stop_time / 1.5);
+	}else if (stop_time >= 1.5 && stop_time < 6.5) {
+		a = 0;
+	}else if(stop_time >= 6.5 && stop_time < 8) {
+		a = 100 + 155 * easeInBounce((stop_time - 6.5) / 1.5);
+	}else {
+		a = 255;
+		return true;
+	}
+
+	return false;
+}
+
+void Laser::renderbefore(SDL_Renderer* renderer) {
 	if (laser_tex == nullptr) {
 		loadLaserTextures(renderer);
 	}
 	guide.render(renderer);
+}
+
+void Laser::renderafter(SDL_Renderer* renderer) {
+	laser_tex->setAlpha(a);
+	laser_tail_tex->setAlpha(a);
 
 	SDL_Rect laser_tail_tex_rect = {laser_rect.x+laser_rect.w, laser_rect.y + laser_rect.h, 16,16};
 	SDL_Rect laser_head_tex_rect = {laser_rect.x, laser_rect.y, 16,16};
@@ -127,7 +144,7 @@ void Laser::render(SDL_Renderer* renderer) {
 	}
 	laser_tex->scaleAndRender(renderer, &laser_rect);
 	laser_tail_tex->scaleAndRender(renderer, &laser_tail_tex_rect);
-	laser_head_tex->scaleAndRender(renderer, &laser_head_tex_rect);
+	laser_head_tex->scaleAndRenderSprite(renderer, &laser_head_tex_rect, a == 0);
 
 	if (morientation) {
 		int sw = laser_rect.w;
@@ -137,6 +154,8 @@ void Laser::render(SDL_Renderer* renderer) {
 		laser_rect.x -= laser_rect.w;
 
 	}
+	laser_tex->setAlpha(255);
+	laser_tail_tex->setAlpha(255);
 }
 
 void Laser::test(SDL_Renderer* renderer) {
