@@ -36,6 +36,7 @@ Boss::Boss(int width, int height) {
 	hitbox.x = width/2 - hitbox.w/2;
 	hitbox.y = -hitbox.h;
 	srand(time(0));
+	
 }
 
 double rocks_fall_time = 10000;
@@ -101,12 +102,9 @@ void Boss::tick(double deltaTime, SDL_Rect *background_rect, std::vector<SDL_Rec
 }
 
 void Boss::renderbefore(SDL_Renderer* renderer) {
-	if (!animationRunning) {return;}
-
 	if (boss_tex == nullptr) {
 		loadBossTextures(renderer);
 	}
-	boss_tex->scaleAndRender(renderer, &hitbox);
 
 	for (Rock *i: rocks) {
 		i->render(renderer);
@@ -117,14 +115,16 @@ void Boss::renderbefore(SDL_Renderer* renderer) {
 	for (Laser *i: lasers) {
 		i->renderbefore(renderer);
 	}
+	if (!animationRunning) {return;}
+	boss_tex->scaleAndRender(renderer, &hitbox);
 }
 
 void Boss::renderafter(SDL_Renderer *renderer) {
-	if (!animationRunning) {return;}
-
 	for (Laser *i: lasers) {
 		i->renderafter(renderer);
 	}
+
+	if (!animationRunning) {return;}
 	boss_health_tex->setAlpha(health_bar_op);
 	boss_health_bar_tex->setAlpha(health_bar_op);
 
