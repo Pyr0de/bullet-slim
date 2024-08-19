@@ -56,7 +56,7 @@ bool Rock::tick(double deltaTime, std::vector<SDL_Rect*> &obstacles) {
 			break;
 		}
 	}
-
+	hitbox.x += velX *deltaTime;
 			//if (!grounded) {
 			//	srand(time(0));
 			//	grounded = true;
@@ -75,7 +75,8 @@ void Rock::render(SDL_Renderer* render) {
 	if (rock_tex == nullptr) {
 		loadRockTexture(render);
 	}
-	
+	if (!toRender)
+		return;
 	rock_tex->scaleAndRenderSprite(render, &hitbox, currSprite);
 #ifdef __DEBUG__
 	test(render);

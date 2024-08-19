@@ -184,7 +184,7 @@ void Player::eatRock(std::vector<Rock*> &rocks) {
 				tryEat = false;
 				continue;
 			}
-			if (distance(rx, ry, px, py) < 25) {
+			if (distance(rx, ry, px, py) < 25 && i->toRender) {
 				consumed = i;
 				consumed->grounded = true;
 				consumed->hitbox.x = px - consumed->hitbox.w/2;
