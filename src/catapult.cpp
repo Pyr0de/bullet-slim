@@ -99,7 +99,8 @@ void Catapult::renderafter(SDL_Renderer *renderer) {
 	catapult_bar_rect.x += w/30;
 	catapult_bar_rect.w = progress >= 100 ? 0: 56 * progress/100;
 
-	SDL_SetRenderDrawColor(renderer, 255,255,255, 255);
+	SDL_SetRenderDrawColor(renderer, 255,255,255, alpha);
+	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 	SDL_RenderFillRect(renderer, &catapult_bar_rect);
 	
 	catapult_bar_rect.w = w;
