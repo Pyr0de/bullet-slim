@@ -1,5 +1,6 @@
 #include "catapult.h"
 #include <SDL_events.h>
+#include <SDL_keycode.h>
 #include <SDL_mouse.h>
 #include <SDL_rect.h>
 #include <SDL_render.h>
@@ -45,6 +46,7 @@ Uint8 frames = 0;
 int fps = 0;
 std::stringstream fps_text;
 
+bool paused = false;
 bool running = true;
 
 Uint64 now = SDL_GetPerformanceCounter();
@@ -75,6 +77,8 @@ void main_loop() {
 		if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT) {
 			boss->startAnimation();
 		}
+		if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)
+			paused = !paused;
 	}
 
 	fps_text.str("");
@@ -82,11 +86,14 @@ void main_loop() {
 	fps_count.loadText(render, fps_text.str().c_str(), white);
 	
 	//Game Tick
-	player->handleInputs();
-	player->eatRock(boss->rocks);
-	player->move(deltaTime, obs);
-	boss->tick(deltaTime, &background_rect, obs, player);
-	catapult->tick(deltaTime, player, boss->rocks);
+	
+	if (!paused) {
+		player->handleInputs();
+		player->eatRock(boss->rocks);
+		player->move(deltaTime, obs);
+		boss->tick(deltaTime, &background_rect, obs, player);
+		catapult->tick(deltaTime, player, boss->rocks);
+	}
 
 	//Render
 	SDL_SetRenderDrawColor(render, 0, 0, 0, 255);
@@ -101,11 +108,17 @@ void main_loop() {
 
 	background.scaleAndRender(render, &background_rect);
 
-	fps_count.render(render, &text_box, 1);
 	catapult->renderafter(render);
 	player->renderHud(render);
 	boss->renderafter(render);
 
+	if (paused) {
+		SDL_SetRenderDrawColor(render, 10, 10, 10, 150);
+		SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_BLEND);
+		SDL_RenderFillRect(render, &background_rect);
+	}
+
+	fps_count.render(render, &text_box, 1);
 	SDL_RenderPresent(render);
 	frames++;
 }
