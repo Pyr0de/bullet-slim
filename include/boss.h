@@ -13,10 +13,10 @@ class Boss{
 	double animationTime = 0;
 	bool animationRunning = false;
 
-	float health = 4;
 	int health_bar_op = 0;
 
 	public:
+	float health = 10;
 	std::vector<Rock*> rocks = {};
 	std::vector<Bullet*> bullets = {};
 	std::vector<Laser*> lasers = {};
