@@ -1,4 +1,5 @@
 #include "catapult.h"
+#include "menu.h"
 #include <SDL_events.h>
 #include <SDL_keycode.h>
 #include <SDL_mouse.h>
@@ -37,9 +38,10 @@ Player* player;
 Boss* boss;
 Catapult *catapult;
 
+Menu *menu;
+
 Texture fps_count;
 SDL_Rect text_box = SDL_Rect {0,0,0,0};
-SDL_Color white = {255,255,255,255};
 
 Uint64 start = SDL_GetTicks64();;
 Uint8 frames = 0;
@@ -51,6 +53,26 @@ bool running = true;
 
 Uint64 now = SDL_GetPerformanceCounter();
 Uint64 last = 0;
+
+void restart() {
+	obs = {};
+	createObstacles(render, &obs, "assets/level3.map");
+	obs.erase(obs.begin());
+
+	delete player;
+	delete boss;
+	delete catapult;
+
+	player = new Player(render, width, height);
+	boss = new Boss(width, height);
+	catapult = new Catapult(200, height - 64*3);
+
+	obs.push_back(&catapult->hitbox);
+	fps_count = Texture(25);
+	
+	running = true;
+	paused = false;
+}
 
 void main_loop() {
 	last = now;
@@ -77,13 +99,41 @@ void main_loop() {
 		if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT) {
 			boss->startAnimation();
 		}
-		if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)
-			paused = !paused;
+		if (e.type == SDL_KEYDOWN) {
+			if (e.key.keysym.sym == SDLK_ESCAPE && (boss->health > 0 && player->health > 0)) {
+				paused = !paused;
+				menu->resumeSelect = true;
+			}
+			if (!paused)
+				continue;
+
+			if (e.key.keysym.sym == SDLK_a || e.key.keysym.sym == SDLK_LEFT) {
+				menu->resumeSelect = true;
+			}
+			
+			if (e.key.keysym.sym == SDLK_d || e.key.keysym.sym == SDLK_RIGHT) {
+				menu->resumeSelect = false;
+			}	
+
+			if (boss->health <= 0 || player->health <= 0) {
+				paused = true;
+				menu->resumeSelect = false;
+			}
+
+			if (e.key.keysym.sym == SDLK_e) {
+				if (menu->resumeSelect) {
+					paused = false;
+				}else {
+					restart();
+				}
+			} 
+				
+		}
 	}
 
 	fps_text.str("");
 	fps_text << fps;
-	fps_count.loadText(render, fps_text.str().c_str(), white);
+	fps_count.loadText(render, fps_text.str().c_str(), {255, 255, 255, 255});
 	
 	//Game Tick
 	
@@ -93,7 +143,10 @@ void main_loop() {
 		player->move(deltaTime, obs);
 		boss->tick(deltaTime, &background_rect, obs, player);
 		catapult->tick(deltaTime, player, boss->rocks);
+
+		paused = boss->health == 0 || player->health == 0;
 	}
+
 
 	//Render
 	SDL_SetRenderDrawColor(render, 0, 0, 0, 255);
@@ -116,6 +169,10 @@ void main_loop() {
 		SDL_SetRenderDrawColor(render, 10, 10, 10, 150);
 		SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_BLEND);
 		SDL_RenderFillRect(render, &background_rect);
+		if (boss->health != 0 && player->health != 0)
+			menu->renderpause(render);
+		else
+			menu->renderend(render);
 	}
 
 	fps_count.render(render, &text_box, 1);
@@ -129,17 +186,14 @@ void gameStart(SDL_Window* win, SDL_Renderer *r, int w, int h) {
 	width = w;
 	height = h;
 
-	createObstacles(render, &obs, "assets/level3.map");
-	obs.erase(obs.begin());
-
 	background.loadFile(render, "assets/level3.png");
 	background_rect.w = w;
 	background_rect.h = h;
+	
+	menu = new Menu(width, height);
+	
+	restart();
 
-	player = new Player(render);
-	boss = new Boss(width, height);
-	catapult = new Catapult(200, height - 64*3);
-	obs.push_back(&catapult->hitbox);
 	fps_count = Texture(25);
 #ifdef __EMSCRIPTEN__
 	if (win_width != 0 || win_height != 0) {

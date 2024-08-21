@@ -21,11 +21,11 @@
 
 #define DAMAGE_COOLDOWN 0.5
 
-Player::Player(SDL_Renderer* render) {
+Player::Player(SDL_Renderer* render, int width, int height) {
 	texture = Texture();
 	texture.loadSpriteSheet(render, "assets/slime.png", 2);
 
-	hitbox = {70,70,0,0};
+	hitbox = {width/2, 80, 0, 0};
 	velX = 0;
 	velY = 0;
 	jumping = false;

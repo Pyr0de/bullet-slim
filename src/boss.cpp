@@ -19,6 +19,12 @@ Texture* boss_health_tex = nullptr;
 int screen_w = 0;
 int screen_h = 0;
 
+double rocks_fall_time = 10000;
+double ground_shake_animation = 0;
+
+double phase1interval = 0;
+bool phase2_laser_created = false;
+
 void loadBossTextures(SDL_Renderer* render) {
 	boss_tex = new Texture();
 	boss_health_bar_tex = new Texture();
@@ -39,11 +45,13 @@ Boss::Boss(int width, int height) {
 	
 	mainbody.w = hitbox.w/128 * 52;
 	mainbody.h = hitbox.h/128 * 91;
+	rocks_fall_time = 10000;
+	ground_shake_animation = 0;
 
+	phase1interval = 0;
+	phase2_laser_created = false;
 }
 
-double rocks_fall_time = 10000;
-double ground_shake_animation = 0;
 void Boss::tick(double deltaTime, SDL_Rect *background_rect, std::vector<SDL_Rect*> &obstacles,
 		Player* player) {
 
@@ -162,7 +170,6 @@ void Boss::test(SDL_Renderer* renderer) {
 	SDL_RenderDrawRect(renderer, &mainbody);
 }
 
-double phase1interval = 0;
 bool Boss::phase1(double deltaTime, Player* player) {
 	if (phase1interval > 1.5) {
 		int x = 64 + rand() % (screen_w - 64 * 3);
@@ -174,7 +181,6 @@ bool Boss::phase1(double deltaTime, Player* player) {
 	return false;
 }
 
-bool phase2_laser_created = false;
 bool Boss::phase2(double deltaTime, int width) {
 	if (!phase2_laser_created) {
 		lasers.push_back(new Laser(150, 150, width - 150, 150 ,1));
