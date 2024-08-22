@@ -1,19 +1,13 @@
 #include "menu.h"
 #include "texture.h"
+#include <SDL_pixels.h>
 
-Texture *restart, *resume;
-Texture *restart_active, *resume_active;
+Texture *text;
+
+SDL_Color select_color = {255, 0, 0, 255}, deselect_color = {255, 255, 255, 255};
 
 void loadmenutex(SDL_Renderer *renderer) {
-	restart = new Texture(30);
-	resume = new Texture(30);
-	restart_active = new Texture(30);
-	resume_active = new Texture(30);
-
-	restart->loadText(renderer, "Restart", {255, 255, 255, 255});
-	resume->loadText(renderer, "Resume", {255, 255, 255, 255});
-	restart_active->loadText(renderer, "Restart", {255, 0, 0, 255});
-	resume_active->loadText(renderer, "Resume", {255, 0, 0, 255});
+	text = new Texture(30);
 }
 
 Menu::Menu(int width, int height) {
@@ -22,35 +16,31 @@ Menu::Menu(int width, int height) {
 }
 
 void Menu::renderpause(SDL_Renderer *render){
-	if (restart == nullptr)
+	if (text == nullptr)
 		loadmenutex(render);
 
 	SDL_SetRenderDrawColor(render, 255, 0, 0, 255);
 	SDL_RenderDrawRect(render, &menuwindow);
-	
-	SDL_Rect a = {menuwindow.x + 3 * menuwindow.w/4 - restart->w/2, menuwindow.y + menuwindow.h - 50 - restart->h , 0, 0};
-	if (!resumeSelect)
-		restart_active->render(render, &a, 1);
-	else
-		restart->render(render, &a, 1);
-	
-	a.x = menuwindow.x + menuwindow.w/4 - resume->w/2;
 
-	if (resumeSelect)
-		resume_active->render(render, &a, 1);
-	else
-		resume->render(render, &a, 1);
+	text->loadText(render, "Restart", !resumeSelect ? select_color : deselect_color);
+	SDL_Rect a = {menuwindow.x + 3 * menuwindow.w/4 - text->w/2, menuwindow.y + menuwindow.h - 50 - text->h , 0, 0};
+	text->render(render, &a, 1);
+
+	text->loadText(render, "Resume", resumeSelect ? select_color : deselect_color);
+	a.x = menuwindow.x + menuwindow.w/4 - text->w/2;
+	text->render(render, &a, 1);
 }
 
 void Menu::renderend(SDL_Renderer *render){
-	if (restart == nullptr)
+	if (text == nullptr)
 		loadmenutex(render);
 	
 	SDL_SetRenderDrawColor(render, 255, 0, 0, 255);
 	SDL_RenderDrawRect(render, &menuwindow);
 
-	SDL_Rect a = {menuwindow.x +  menuwindow.w/2 - restart->w/2, menuwindow.y + menuwindow.h - 50 - restart->h , 0, 0};
+	text->loadText(render, "Restart", select_color);
+	SDL_Rect a = {menuwindow.x +  menuwindow.w/2 - text->w/2, menuwindow.y + menuwindow.h - 50 - text->h , 0, 0};
 
-	restart_active->render(render, &a, 1);
+	text->render(render, &a, 1);
 }
 
