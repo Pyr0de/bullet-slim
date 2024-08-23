@@ -3,7 +3,7 @@
 #include <SDL_rect.h>
 #include <SDL_render.h>
 class Menu {
-	SDL_Rect menuwindow = {0, 0, 1000, 600};
+	SDL_Rect menuwindow = {0, 0, 1000, 700};
 
 
 	public:
