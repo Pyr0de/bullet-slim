@@ -8,6 +8,7 @@ class Texture {
 	SDL_Texture* texture;
 	int numberOfSprites;
 	SDL_RendererFlip flip;
+	TTF_Font* font = nullptr;
 
 	public:
 	int w,h;
@@ -15,7 +16,7 @@ class Texture {
 	SDL_Point anchor = {0,0};
 
 	Texture();
-	Texture(int);
+	Texture(int font_size, std::string file_path = "assets/Roboto.ttf");
 
 	~Texture();
 
