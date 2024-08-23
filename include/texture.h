@@ -16,7 +16,7 @@ class Texture {
 	SDL_Point anchor = {0,0};
 
 	Texture();
-	Texture(int font_size, std::string file_path = "assets/Roboto.ttf");
+	Texture(int font_size, std::string file_path = "assets/Montserrat.ttf");
 
 	~Texture();
 
