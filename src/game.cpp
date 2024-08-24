@@ -172,7 +172,7 @@ void main_loop() {
 		if (boss->health != 0 && player->health != 0)
 			menu->renderpause(render);
 		else
-			menu->renderend(render);
+			menu->renderend(render, player->health > 0, "50:10.10");
 	}
 
 	fps_count.render(render, &text_box, 1);
