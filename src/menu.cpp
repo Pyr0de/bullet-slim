@@ -8,7 +8,7 @@ Texture *pause_tex;
 SDL_Color select_color = {0xFF, 0xE6, 0xE6, 0xFF}, deselect_color = {0xAD, 0x88, 0xC6, 0xFF};
 
 void loadmenutex(SDL_Renderer *renderer) {
-	text = new Texture(35);
+	text = new Texture(35, "assets/Montserrat-Bold.ttf");
 	pause_tex = new Texture();
 
 	pause_tex->loadFile(renderer, "assets/menu/pause.png");
@@ -29,7 +29,7 @@ void Menu::renderpause(SDL_Renderer *render){
 	SDL_RenderDrawRect(render, &menuwindow);
 #endif
 	text->loadText(render, "Restart", !resumeSelect ? select_color : deselect_color);
-	SDL_Rect a = {menuwindow.x + 3 * menuwindow.w/4 - text->w/2, menuwindow.y + menuwindow.h - 50 - text->h , 0, 0};
+	SDL_Rect a = {menuwindow.x + 3 * menuwindow.w/4 - text->w/2, menuwindow.y + menuwindow.h - 75 - text->h , 0, 0};
 	text->render(render, &a, 1);
 
 	text->loadText(render, "Resume", resumeSelect ? select_color : deselect_color);

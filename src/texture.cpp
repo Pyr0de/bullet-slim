@@ -64,7 +64,7 @@ void Texture::loadText(SDL_Renderer* render, std::string text, SDL_Color color) 
 	if (!font) {
 		return;
 	}
-	SDL_Surface *surf = TTF_RenderText_Solid(font, text.c_str(), color);
+	SDL_Surface *surf = TTF_RenderText_Blended(font, text.c_str(), color);
 
 	if (surf) {
 		texture = SDL_CreateTextureFromSurface(render, surf);
