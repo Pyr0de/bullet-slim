@@ -1,10 +1,12 @@
 #include "catapult.h"
 #include "menu.h"
+#include "utils.h"
 #include <SDL_events.h>
 #include <SDL_keycode.h>
 #include <SDL_mouse.h>
 #include <SDL_rect.h>
 #include <SDL_render.h>
+#include <SDL_stdinc.h>
 #include <SDL_timer.h>
 #include <SDL_video.h>
 #include <cstdio>
@@ -33,6 +35,8 @@ std::vector<SDL_Rect*> obs = {};
 
 Texture background = Texture();
 SDL_Rect background_rect = SDL_Rect {0,0,0,0};
+SDL_Rect timer_rect = {10000, 0, 0, 0};
+Texture timer_text;
 
 Player* player;
 Boss* boss;
@@ -47,6 +51,8 @@ Uint64 start = SDL_GetTicks64();;
 Uint8 frames = 0;
 int fps = 0;
 std::stringstream fps_text;
+
+double timer = 0;
 
 bool paused = false;
 bool running = true;
@@ -72,6 +78,8 @@ void restart() {
 	
 	running = true;
 	paused = false;
+	
+	timer = 0;
 }
 
 void main_loop() {
@@ -138,6 +146,9 @@ void main_loop() {
 	//Game Tick
 	
 	if (!paused) {
+
+		timer += deltaTime;
+
 		player->handleInputs();
 		player->eatRock(boss->rocks);
 		player->move(deltaTime, obs);
@@ -145,8 +156,14 @@ void main_loop() {
 		catapult->tick(deltaTime, player, boss->rocks);
 
 		paused = boss->health == 0 || player->health == 0;
+
+		timer_text.loadText(render, timeSecToString(timer), {255, 255, 255, 255});
+		if (timer_rect.x > width - timer_text.w)
+			timer_rect.x = width - timer_text.w;
+
 	}
 
+	
 
 	//Render
 	SDL_SetRenderDrawColor(render, 0, 0, 0, 255);
@@ -165,14 +182,18 @@ void main_loop() {
 	player->renderHud(render);
 	boss->renderafter(render);
 
+	timer_text.render(render, &timer_rect, 1);
+
 	if (paused) {
 		SDL_SetRenderDrawColor(render, 10, 10, 10, 150);
 		SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_BLEND);
 		SDL_RenderFillRect(render, &background_rect);
 		if (boss->health != 0 && player->health != 0)
 			menu->renderpause(render);
-		else
-			menu->renderend(render, player->health > 0, "50:10.10");
+		else{
+			menu->renderend(render, player->health > 0, timeSecToString(timer));
+		}
+		
 	}
 
 	fps_count.render(render, &text_box, 1);
@@ -191,10 +212,11 @@ void gameStart(SDL_Window* win, SDL_Renderer *r, int w, int h) {
 	background_rect.h = h;
 	
 	menu = new Menu(width, height);
-	
+
 	restart();
 
 	fps_count = Texture(25);
+	timer_text = Texture(25);
 #ifdef __EMSCRIPTEN__
 	if (win_width != 0 || win_height != 0) {
 		SDL_SetWindowSize(window, win_width, win_height);
