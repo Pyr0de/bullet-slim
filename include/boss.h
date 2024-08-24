@@ -11,12 +11,12 @@ class Boss{
 	SDL_Rect hitbox = {0,0,512,512};
 	SDL_Rect mainbody = {0,0,0,0};
 	double animationTime = 0;
-	bool animationRunning = false;
 
 	int health_bar_op = 0;
 
 	public:
 	float health = 10;
+	bool animationRunning = false;
 	std::vector<Rock*> rocks = {};
 	std::vector<Bullet*> bullets = {};
 	std::vector<Laser*> lasers = {};
@@ -24,9 +24,6 @@ class Boss{
 	Boss(int width, int height);
 	
 	void tick(double deltaTime, SDL_Rect *background_rect, std::vector<SDL_Rect *> &obstacles, Player *player);
-	void startAnimation() {
-		animationRunning = true;
-	}
 
 	void renderbefore(SDL_Renderer* renderer);
 	void renderafter(SDL_Renderer *renderer);

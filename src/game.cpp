@@ -1,5 +1,6 @@
 #include "catapult.h"
 #include "menu.h"
+#include "title.h"
 #include "utils.h"
 #include <SDL_events.h>
 #include <SDL_keycode.h>
@@ -42,6 +43,7 @@ Player* player;
 Boss* boss;
 Catapult *catapult;
 
+Title *title;
 Menu *menu;
 
 Texture fps_count;
@@ -72,13 +74,16 @@ void restart() {
 	player = new Player(render, width, height);
 	boss = new Boss(width, height);
 	catapult = new Catapult(200, height - 64*3);
+	title = new Title(width, height);
 
 	obs.push_back(&catapult->hitbox);
+	obs.push_back(&title->hitbox);
 	fps_count = Texture(25);
 	
 	running = true;
 	paused = false;
 	
+	timer_text.loadText(render, "00:00.000", {255, 255, 255, 255});
 	timer = 0;
 }
 
@@ -103,9 +108,6 @@ void main_loop() {
 	while (SDL_PollEvent(&e)) {
 		if (e.type == SDL_QUIT) {
 			running = false;
-		}
-		if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT) {
-			boss->startAnimation();
 		}
 		if (e.type == SDL_KEYDOWN) {
 			if (e.key.keysym.sym == SDLK_ESCAPE && (boss->health > 0 && player->health > 0)) {
@@ -147,20 +149,31 @@ void main_loop() {
 	
 	if (!paused) {
 
-		timer += deltaTime;
 
 		player->handleInputs();
 		player->eatRock(boss->rocks);
 		player->move(deltaTime, obs);
-		boss->tick(deltaTime, &background_rect, obs, player);
-		catapult->tick(deltaTime, player, boss->rocks);
 
-		paused = boss->health == 0 || player->health == 0;
+		if (title->active) {
+			title->tick(deltaTime, player->hitbox);
+		}
+
+		if (title->time > 0){
+			if (boss->animationRunning == false) {
+				obs.pop_back();
+			}
+			boss->animationRunning = true;
+			boss->tick(deltaTime, &background_rect, obs, player);
+			catapult->tick(deltaTime, player, boss->rocks);
+
+			paused = boss->health == 0 || player->health == 0;
+
+			timer += deltaTime;
+		}
 
 		timer_text.loadText(render, timeSecToString(timer), {255, 255, 255, 255});
 		if (timer_rect.x > width - timer_text.w)
 			timer_rect.x = width - timer_text.w;
-
 	}
 
 	
@@ -172,6 +185,7 @@ void main_loop() {
 	SDL_SetRenderDrawColor(render, 45, 41, 53, 255);
 	SDL_RenderFillRect(render, &background_rect);
 
+	title->render(render);
 	boss->renderbefore(render);
 	player->render(render);
 	catapult->renderbefore(render);
@@ -183,7 +197,6 @@ void main_loop() {
 	boss->renderafter(render);
 
 	timer_text.render(render, &timer_rect, 1);
-
 	if (paused) {
 		SDL_SetRenderDrawColor(render, 10, 10, 10, 150);
 		SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_BLEND);
@@ -195,7 +208,7 @@ void main_loop() {
 		}
 		
 	}
-
+	
 	fps_count.render(render, &text_box, 1);
 	SDL_RenderPresent(render);
 	frames++;
