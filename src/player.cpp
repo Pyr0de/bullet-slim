@@ -25,7 +25,7 @@ Player::Player(SDL_Renderer* render, int width, int height) {
 	texture = Texture();
 	texture.loadSpriteSheet(render, "assets/slime.png", 2);
 
-	hitbox = {width/2, 80, 0, 0};
+	hitbox = {width/2 - 32, 312, 0, 0};
 	velX = 0;
 	velY = 0;
 	jumping = false;
