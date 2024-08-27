@@ -43,6 +43,8 @@ Player* player;
 Boss* boss;
 Catapult *catapult;
 
+int wasm_flags = 0;
+
 Title *title;
 Menu *menu;
 
@@ -79,12 +81,50 @@ void restart() {
 	obs.push_back(&catapult->hitbox);
 	obs.push_back(&title->hitbox);
 	fps_count = Texture(25);
-	
+
 	running = true;
 	paused = false;
-	
+
 	timer_text.loadText(render, "00:00.000", {255, 255, 255, 255});
 	timer = 0;
+
+#ifdef __EMSCRIPTEN__
+	EM_ASM(
+		restart();
+	);
+
+#endif
+}
+
+void handleEvents(bool esc, bool left, bool right, bool interact) {
+	if (esc && (boss->health > 0 && player->health > 0)) {
+		paused = !paused;
+		menu->resumeSelect = true;
+	}
+	if (!paused)
+		return;
+
+	if (left) {
+		menu->resumeSelect = true;
+	}
+
+	if (right) {
+		menu->resumeSelect = false;
+	}	
+
+	if (boss->health <= 0 || player->health <= 0) {
+		paused = true;
+		menu->resumeSelect = false;
+	}
+
+	if (interact) {
+		if (menu->resumeSelect) {
+			paused = false;
+		}else {
+			restart();
+		}
+	} 
+
 }
 
 void main_loop() {
@@ -110,33 +150,10 @@ void main_loop() {
 			running = false;
 		}
 		if (e.type == SDL_KEYDOWN) {
-			if (e.key.keysym.sym == SDLK_ESCAPE && (boss->health > 0 && player->health > 0)) {
-				paused = !paused;
-				menu->resumeSelect = true;
-			}
-			if (!paused)
-				continue;
-
-			if (e.key.keysym.sym == SDLK_a || e.key.keysym.sym == SDLK_LEFT) {
-				menu->resumeSelect = true;
-			}
-			
-			if (e.key.keysym.sym == SDLK_d || e.key.keysym.sym == SDLK_RIGHT) {
-				menu->resumeSelect = false;
-			}	
-
-			if (boss->health <= 0 || player->health <= 0) {
-				paused = true;
-				menu->resumeSelect = false;
-			}
-
-			if (e.key.keysym.sym == SDLK_e) {
-				if (menu->resumeSelect) {
-					paused = false;
-				}else {
-					restart();
-				}
-			} 
+			handleEvents(e.key.keysym.sym == SDLK_ESCAPE, 
+					e.key.keysym.sym == SDLK_a || e.key.keysym.sym == SDLK_LEFT,
+					e.key.keysym.sym == SDLK_d || e.key.keysym.sym == SDLK_RIGHT,
+					e.key.keysym.sym == SDLK_e);
 				
 		}
 	}
@@ -146,11 +163,8 @@ void main_loop() {
 	fps_count.loadText(render, fps_text.str().c_str(), {255, 255, 255, 255});
 	
 	//Game Tick
-	
 	if (!paused) {
-
-
-		player->handleInputs();
+		player->handleInputs(wasm_flags);
 		player->eatRock(boss->rocks);
 		player->move(deltaTime, obs);
 
@@ -256,5 +270,21 @@ extern "C" {
 
 		SDL_SetWindowSize(window, w, h);
     }
+
+	//Button index:
+	//1: Left : 0
+	//2: Right : 1
+	//4: Up : 2
+	//8: Interact : 3
+	//16: Escape/Pause : 4
+    EMSCRIPTEN_KEEPALIVE
+	void handleControl(int button, bool state) {
+		if (state) {
+			handleEvents(button == 4, button == 0, button == 1, button == 3);
+			wasm_flags |= 1 << button;
+		}else
+			wasm_flags &= ~(1 << button);
+	
+	}
 }
 #endif

@@ -37,11 +37,11 @@ Player::Player(SDL_Renderer* render, int width, int height) {
 	
 }
 
-void Player::handleInputs() {
+void Player::handleInputs(int wasm_flags) {
 	auto *keyboardState = SDL_GetKeyboardState(nullptr);
 	
-	tryEat = keyboardState[SDL_SCANCODE_E] && !interact;
-	interact = keyboardState[SDL_SCANCODE_E];
+	tryEat = (keyboardState[SDL_SCANCODE_E] || wasm_flags & 8) && !interact;
+	interact = keyboardState[SDL_SCANCODE_E] || wasm_flags & 8;
 
 	if (knockback) {
 		return;
@@ -49,14 +49,14 @@ void Player::handleInputs() {
 	int vx = consumed ? VEL_X_SLOW : VEL_X;
 	int vy = consumed ? VEL_JUMP_SLOW : VEL_JUMP;
 
-	if ((keyboardState[SDL_SCANCODE_A] || keyboardState[SDL_SCANCODE_LEFT]) && velX <= 0) {
+	if ((keyboardState[SDL_SCANCODE_A] || keyboardState[SDL_SCANCODE_LEFT] || wasm_flags & 1) && velX <= 0) {
 		velX = -vx;
-	}else if ((keyboardState[SDL_SCANCODE_D] || keyboardState[SDL_SCANCODE_RIGHT]) && velX >= 0) {
+	}else if ((keyboardState[SDL_SCANCODE_D] || keyboardState[SDL_SCANCODE_RIGHT] || wasm_flags & 2) && velX >= 0) {
 		velX = vx;
 	}else {
 		velX = 0;
 	}
-	if (keyboardState[SDL_SCANCODE_SPACE] || keyboardState[SDL_SCANCODE_UP]) {
+	if (keyboardState[SDL_SCANCODE_SPACE] || keyboardState[SDL_SCANCODE_UP] || wasm_flags & 4) {
 		if (!jumping) {
 			velY = vy;
 			jumping = true;
