@@ -14,17 +14,18 @@ canvas {
 
 button {
 	position: absolute;
-	background: none;
-	border: none;
+	background: blue;
+	border: green;
 	z-index: 2;
-}
-img {
-	height: 100%;
-	z-index: 1;
+	text-align: center;
 }
 
-#buttons {
+.hidden {
 	opacity: 0;
+	transition-duration: 1s;
+}
+.shown {
+	opacity: 1;
 }
 
 #left {

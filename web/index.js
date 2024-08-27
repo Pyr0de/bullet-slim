@@ -4,7 +4,25 @@
 //2: Up
 //3: Interact
 //handleControl(buttonindex, buttonstate)
-let handleControl = Module.cwrap("handleControl", null, ["int", "bool"])
+let handleControl = (idx, state) => {
+	Module.cwrap("handleControl", null, ["int", "bool"])(idx, state)
+	if (timeout != -1 && idx != 3) {
+		let buttons = document.getElementById("buttons")
+		clearTimeout(timeout)
+		timeout = -1
+		buttons.className = "hidden"
+	}
+}
+
+function restart() {
+	if (!mobileAndTabletCheck())
+		return
+
+	let buttons = document.getElementById("buttons")
+	buttons.className = "shown"
+	timeout = setTimeout(() => {buttons.className = "hidden"}, 10000)
+}
+let timeout = -1;
 
 let mobileAndTabletCheck = function() {
   let check = false;
@@ -18,29 +36,23 @@ window.oncontextmenu = function(event) {
      return false;
 };
 
-if (!mobileAndTabletCheck()) {
-	document.getElementById("buttons").remove()
-}else {
-	document.getElementById('up').addEventListener("touchstart", () => {handleControl(2,1)})
-	document.getElementById('up').addEventListener("touchend", () => {handleControl(2,0)})
+document.getElementById('up').addEventListener("touchstart", () => {handleControl(2,1)})
+document.getElementById('up').addEventListener("touchend", () => {handleControl(2,0)})
 
-	document.getElementById('left').addEventListener("touchstart", () => {handleControl(0,1)})
-	document.getElementById('left').addEventListener("touchend", () => {handleControl(0,0)})
+document.getElementById('left').addEventListener("touchstart", () => {handleControl(0,1)})
+document.getElementById('left').addEventListener("touchend", () => {handleControl(0,0)})
 
-	document.getElementById('right').addEventListener("touchstart", () => {handleControl(1,1)})
-	document.getElementById('right').addEventListener("touchend", () => {handleControl(1,0)})
+document.getElementById('right').addEventListener("touchstart", () => {handleControl(1,1)})
+document.getElementById('right').addEventListener("touchend", () => {handleControl(1,0)})
 
-	document.getElementById('interact').addEventListener("touchstart", () => {handleControl(3,1)})
-	document.getElementById('interact').addEventListener("touchend", () => {handleControl(3,0)})
+document.getElementById('interact').addEventListener("touchstart", () => {handleControl(3,1)})
+document.getElementById('interact').addEventListener("touchend", () => {handleControl(3,0)})
 
-	document.getElementById('pause').addEventListener("touchstart", () => {handleControl(4,1)})
-	document.getElementById('pause').addEventListener("touchend", () => {handleControl(4,0)})
+document.getElementById('pause').addEventListener("touchstart", () => {handleControl(4,1)})
+document.getElementById('pause').addEventListener("touchend", () => {handleControl(4,0)})
 
-	document.getElementById('fullscreen').addEventListener("touchstart", () => {
-		if (window.innerWidth != screen.width || window.innerHeight != screen.height) {
-			document.exitFullscreen();
-		}else {
-			document.documentElement.requestFullscreen();
-		}
-	})
-}
+document.getElementById('fullscreen').addEventListener("touchstart", () => {
+	if (window.innerWidth != screen.width || window.innerHeight != screen.height) {
+		document.documentElement.requestFullscreen();
+	}
+})
