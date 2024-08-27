@@ -1,10 +1,49 @@
 body {
 	margin: 0;
 	overflow: hidden;
+	width: 100vw;
+	height: 100vh;
+	touch-action: manipulation;
+	background: black;
+}
+
+canvas {
+	position: absolute;
+	z-index: 0;
 }
 
 button {
+	position: absolute;
 	background: none;
 	border: none;
+	width: 5%;
+	z-index: 2;
+}
+img {
+	height: 100%;
+	z-index: 1;
 }
 
+#buttons {
+	opacity: 0;
+}
+
+#up {
+	top: 70%;
+	left: 80%;
+}
+
+#interact {
+	top: 85%;
+	left: 80%
+}
+
+#left {
+	top: 77.5%;
+	left: 0%;
+}
+
+#right {
+	top: 77.5%;
+	left: 20%;
+}

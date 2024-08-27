@@ -4,31 +4,38 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
 	<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
-	<button id="up"><img src="button.png"></button>
-    
+    <canvas id="canvas" oncontextmenu="event.preventDefault()" ></canvas>
+	
+	<div id="buttons">
+			<button id="left"><img src="button.png"></button>
+			<button id="right"><img src="button.png"></button>
+			<button id="up"><img src="button.png"></button>
+			<button id="interact"><img src="button.png"></button>
+	</div>
 	<script type='text/javascript'>
-        var Module = {
-            canvas: (function() { return document.getElementById('canvas'); })(),
-            onRuntimeInitialized: function() {
-                var resizeCanvas = Module.cwrap('resizeCanvas', null, []);
+		var Module = {
+			canvas: (function() { return document.getElementById('canvas'); })(),
+			onRuntimeInitialized: function() {
+				var resizeCanvas = Module.cwrap('resizeCanvas', null, []);
 				function resize() {
 					canvas.width = window.innerWidth;
 					canvas.height = window.innerHeight;
-                    resizeCanvas(canvas.width, canvas.height);
-                }
+					resizeCanvas(canvas.width, canvas.height);
+				}
 
-                window.addEventListener('resize', resize);
-                resize();
+				window.addEventListener('resize', resize);
+				resize();
+				document.getElementById("buttons").style.opacity = 1;
 			}
-        };
-    </script>
-    <script src=bullet-slim.js></script>
-	<script src=index.js></script>
+		};
+	</script>
+	<script src=bullet-slim.js defer></script>
+	<script src=index.js defer></script>
 </body>
 
 </html>
