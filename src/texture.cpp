@@ -7,7 +7,6 @@
 
 #include "texture.h"
 
-TTF_Font* robotoFont = nullptr;
 Texture::Texture(){
 	texture = nullptr;
 	w = 0;
@@ -18,14 +17,14 @@ Texture::Texture(){
 
 }
 
-Texture::Texture(int size){
+Texture::Texture(int size, std::string font_path){
 	texture = nullptr;
 	w = 0;
 	h = 0;
 	numberOfSprites = 0;
 	rotate = 0;
 	flip = SDL_FLIP_NONE;
-	robotoFont = TTF_OpenFont("assets/Roboto.ttf", size);
+	font = TTF_OpenFont(font_path.c_str(), size);
 }
 
 
@@ -62,10 +61,10 @@ void Texture::loadText(SDL_Renderer* render, std::string text, SDL_Color color) 
 
 	}
 	
-	if (!robotoFont) {
+	if (!font) {
 		return;
 	}
-	SDL_Surface *surf = TTF_RenderText_Solid(robotoFont, text.c_str(), color);
+	SDL_Surface *surf = TTF_RenderText_Blended(font, text.c_str(), color);
 
 	if (surf) {
 		texture = SDL_CreateTextureFromSurface(render, surf);

@@ -15,18 +15,18 @@ class Player {
 
 	Texture healthbar_img;
 	//SDL_Rect healthbar;
-	int health;
 	double damageCooldown = 0;
 
 	bool tryEat = false;
 	Rock* consumed = nullptr;
 
 	public:
+	int health;
 	bool interact = false;
 	int velX, velY;
 	SDL_Rect hitbox;
 
-	Player(SDL_Renderer*);
+	Player(SDL_Renderer*, int width, int height);
 
 	void changeHealth(int health);
 	void setKnockback(int x, int y);

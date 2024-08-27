@@ -1,5 +1,8 @@
 #include <algorithm>
 #include <cmath>
+#include <cstdio>
+#include <sstream>
+#include <string>
 
 #include "utils.h"
 
@@ -49,4 +52,21 @@ float easeInBounce(float x) {
 	}
 
 	return 1 - out;
+}
+
+std::string timeSecToString(double time_ms) {
+	std::stringstream out;
+
+	int min = time_ms/60;
+	time_ms -= min * 60;
+	if (min < 10) 
+		out << 0;
+	out << min << ":";
+	
+	int sec = int(time_ms);
+	if (sec < 10)
+		out << 0;
+	out << sec << ".";
+	out << int((time_ms - sec) * 1000);
+	return out.str();
 }
