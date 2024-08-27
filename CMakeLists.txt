@@ -20,6 +20,7 @@ if (WASM)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${USE_FLAGS} --preload-file assets")
 
     set(CMAKE_EXECUTABLE_SUFFIX .js)
+	file(COPY "web/" DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
 else ()
 	message("NATIVE")

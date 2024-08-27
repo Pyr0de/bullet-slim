@@ -42,10 +42,6 @@ jobs:
         cd build
         emmake make -j $(nproc)
         
-    - name: Setup Archive
-      run: |
-        cp web/* build/wasm
-        
     - name: Upload
       uses: actions/upload-pages-artifact@v3
       with:
