@@ -87,13 +87,6 @@ void restart() {
 
 	timer_text.loadText(render, "00:00.000", {255, 255, 255, 255});
 	timer = 0;
-
-#ifdef __EMSCRIPTEN__
-	EM_ASM(
-		restart();
-	);
-
-#endif
 }
 
 void handleEvents(bool esc, bool left, bool right, bool interact) {
