@@ -16,6 +16,9 @@ class Player {
 	Texture healthbar_img;
 	//SDL_Rect healthbar;
 	double damageCooldown = 0;
+	
+	int regen_health = 0;
+	double regen_time = 0;
 
 	bool tryEat = false;
 	Rock* consumed = nullptr;

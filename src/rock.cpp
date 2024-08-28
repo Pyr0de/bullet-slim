@@ -49,7 +49,7 @@ bool Rock::tick(double deltaTime, std::vector<SDL_Rect*> &obstacles) {
 			grounded = true;
 			if (velY > 300) {
 				srand(time(0));
-				breakrock = (rand() % 10) > 5;
+				breakrock = (rand() % 10) > 7;
 
 			}
 			velY = 0;

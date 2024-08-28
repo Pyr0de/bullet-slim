@@ -19,7 +19,10 @@
 #define HEALTHBAR_X 70
 #define HEALTHBAR_Y 10
 
-#define DAMAGE_COOLDOWN 0.5
+#define DAMAGE_COOLDOWN 1
+
+#define REGEN 3
+#define REGEN_TIME 2
 
 Player::Player(SDL_Renderer* render, int width, int height) {
 	texture = Texture();
@@ -29,6 +32,7 @@ Player::Player(SDL_Renderer* render, int width, int height) {
 	velX = 0;
 	velY = 0;
 	jumping = false;
+	regen_health = REGEN;
 
 	health = HEALTH;
 	healthbar_img = Texture();
@@ -39,7 +43,7 @@ Player::Player(SDL_Renderer* render, int width, int height) {
 
 void Player::handleInputs(int wasm_flags) {
 	auto *keyboardState = SDL_GetKeyboardState(nullptr);
-	
+
 	tryEat = (keyboardState[SDL_SCANCODE_E] || wasm_flags & 8) && !interact;
 	interact = keyboardState[SDL_SCANCODE_E] || wasm_flags & 8;
 
@@ -126,7 +130,20 @@ void Player::move(double deltaTime, std::vector<SDL_Rect*> &obs) {
 	if (damageCooldown) {
 		damageCooldown = toZero(damageCooldown, deltaTime);
 	}
-	//printf("%d %d\n", velX, velY);
+
+	if (regen_health < REGEN && velX == 0) {
+		if (regen_time >= REGEN_TIME) {
+			regen_time = 0;
+			regen_health++;
+			changeHealth(1);
+		}else {
+			regen_time += deltaTime;
+		}
+	}else {
+		regen_time = 0;
+	}
+
+
 	if (consumed) {
 		consumed->hitbox.x = hitbox.x + hitbox.w/2 - consumed->hitbox.w/2;
 		consumed->hitbox.y = hitbox.y + hitbox.h/2 - consumed->hitbox.h/2;
@@ -138,6 +155,8 @@ void Player::changeHealth(int h) {
 		if (damageCooldown) {
 			return;
 		}
+		regen_health = 0;
+		regen_time = 0;
 		damageCooldown = DAMAGE_COOLDOWN;
 	}
 

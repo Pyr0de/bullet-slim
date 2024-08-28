@@ -42,7 +42,7 @@ Laser::Laser(int x1, int y1, int x2, int y2, bool orientation) {
 void Laser::tick(std::vector<SDL_Rect*> &obstacles, Player *player, double deltaTime) {
 	if (next_stop < 0) {
 		if (stopanimation(deltaTime)) {
-			next_stop = 10 + rand() % 10;
+			next_stop = 5 + rand() % 10;
 			stop_time = 0;
 		}else {
 			stop_time += deltaTime;

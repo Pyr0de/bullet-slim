@@ -171,7 +171,7 @@ void Boss::test(SDL_Renderer* renderer) {
 }
 
 bool Boss::phase1(double deltaTime, Player* player) {
-	if (phase1interval > 1.5) {
+	if (phase1interval > 1.75) {
 		int x = 64 + rand() % (screen_w - 64 * 3);
 		int y = 64 + rand() % 40;
 		bullets.push_back(new Bullet(x, y, player));
