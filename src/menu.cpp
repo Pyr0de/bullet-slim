@@ -1,9 +1,10 @@
 #include "menu.h"
 #include "texture.h"
 #include <SDL_pixels.h>
+#include <cstdio>
 
 Texture *text;
-Texture *pause_tex, *win_tex, *lose_tex;
+Texture *pause_tex, *win_tex, *lose_tex, *e_tex;
 
 SDL_Color select_color = {0xFF, 0xE6, 0xE6, 0xFF}, deselect_color = {0xAD, 0x88, 0xC6, 0xFF};
 
@@ -12,10 +13,12 @@ void loadmenutex(SDL_Renderer *renderer) {
 	pause_tex = new Texture();
 	win_tex = new Texture();
 	lose_tex = new Texture();
+	e_tex = new Texture();
 
 	pause_tex->loadFile(renderer, "assets/menu/pause.png");
 	win_tex->loadFile(renderer, "assets/menu/win.png");
 	lose_tex->loadFile(renderer, "assets/menu/lose.png");
+	e_tex->loadFile(renderer, "assets/menu/e.png");
 }
 
 Menu::Menu(int width, int height) {
@@ -35,10 +38,26 @@ void Menu::renderpause(SDL_Renderer *render){
 	text->loadText(render, "Restart", !resumeSelect ? select_color : deselect_color);
 	SDL_Rect a = {menuwindow.x + 3 * menuwindow.w/4 - text->w/2, menuwindow.y + menuwindow.h - 75 - text->h , 0, 0};
 	text->render(render, &a, 1);
+	if (!resumeSelect) {
+		a.x -= 50;
+		a.w = 48;
+		a.h = 48;
+		a.y += text->h/2 - a.w/2;
+		e_tex->scaleAndRender(render, &a);
+
+		a.y -= text->h/2 - a.w/2;
+	}
 
 	text->loadText(render, "Resume", resumeSelect ? select_color : deselect_color);
 	a.x = menuwindow.x + menuwindow.w/4 - text->w/2;
 	text->render(render, &a, 1);
+	if (resumeSelect) {
+		a.x -= 50;
+		a.w = 48;
+		a.h = 48;
+		a.y += text->h/2 - a.w/2;
+		e_tex->scaleAndRender(render, &a);
+	}
 }
 
 void Menu::renderend(SDL_Renderer *render, bool isWin, std::string time){
@@ -59,9 +78,16 @@ void Menu::renderend(SDL_Renderer *render, bool isWin, std::string time){
 	SDL_Rect a = {menuwindow.x +  menuwindow.w/2 - text->w/2, menuwindow.y + menuwindow.h - 50 - text->h , 0, 0};
 	text->render(render, &a, 1);
 
+	a.x -= 50;
+	a.w = 48;
+	a.h = 48;
+	a.y += text->h/2 - a.w/2;
+	e_tex->scaleAndRender(render, &a);
+
 	text->loadText(render, time.c_str(), {0,0,0, 255});
 	a.y = menuwindow.y + 342 - text->h/2;
 	a.x = menuwindow.x + menuwindow.w/2 - text->w/2;
 	text->render(render, &a, 1);
+
 }
 
